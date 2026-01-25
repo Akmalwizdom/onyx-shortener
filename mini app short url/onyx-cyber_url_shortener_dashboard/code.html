@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Onyx-Cyber URL Shortener</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#a8ffd5",
+                "background-light": "#f5f8f7",
+                "background-dark": "#000000",
+                "onyx-glass": "rgba(15, 36, 26, 0.6)",
+              },
+              fontFamily: {
+                "display": ["Space Grotesk", "sans-serif"],
+                "mono": ["Space Mono", "monospace"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>body {
+    background-color: #000;
+    background-image: radial-gradient(circle at 2px 2px, rgba(168, 255, 213, 0.05) 1px, transparent 0);
+    background-size: 32px 32px;
+    overflow-x: hidden
+    }
+.noise-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCoieRLjAwNzVVpiR_EOrEAW_I1CB6QWRcsVeQjhK9fvzl7ZStJsF4UjZGIcwM_qlnVUMDaXaKv07OeGr3t3TO1IqNrp8ckyIw7PPUK4u7RUSMNU91QsXuzGVZyILy8qroJ5G_-OjXHGUwu0KNrslA8WHxsJB5LAbAXtnPtA4iR5kTMHLdwBagQOtTBVkKKqshhWuk95TazAaS2IGBzgG8fJY20zmPucp7jedDwLaQlrCddlLdMm_sgudx08zb26KvPBscMUGUnmGY);
+    z-index: 50
+    }
+.glass-panel {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(23, 54, 39, 0.4);
+    border: 1px solid rgba(168, 255, 213, 0.3)
+    }
+.inner-glow {
+    box-shadow: inset 0 0 10px rgba(168, 255, 213, 0.4)
+    }
+.text-phosphor {
+    color: #a8ffd5;
+    text-shadow: 0 0 8px rgba(168, 255, 213, 0.6)
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark text-white font-display">
+<div class="noise-overlay"></div>
+<div class="relative flex h-screen w-full flex-col overflow-hidden max-w-md mx-auto border-x border-primary/10">
+<!-- Top Navigation -->
+<div class="flex items-center p-6 justify-between z-10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">terminal</span>
+<h2 class="text-primary font-mono text-sm tracking-[0.2em] font-bold">ONYX_v.01</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-end">
+<span class="text-[10px] text-primary/50 font-mono">SYS_STATUS</span>
+<span class="text-[10px] text-primary font-mono flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-primary animate-pulse"></span> ONLINE
+                    </span>
+</div>
+<button class="flex items-center justify-center rounded-lg p-2 text-primary border border-primary/20 bg-primary/5">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</div>
+<!-- Upper Content Area: Stats & Title -->
+<div class="flex-1 flex flex-col px-6 pt-8 pb-12 overflow-y-auto no-scrollbar">
+<!-- Headline Display -->
+<div class="mb-12">
+<h1 class="text-white text-[48px] font-bold leading-none tracking-tighter mb-2 italic">
+                    URL//<br/><span class="text-primary">SHORT</span>
+</h1>
+<p class="font-mono text-xs text-primary/40 tracking-widest">CYBERNETIC_LINK_ENGINE_ACTIVE</p>
+</div>
+<!-- Stats Blocks (Staggered appearance) -->
+<div class="flex flex-col gap-4">
+<div class="flex gap-4">
+<div class="flex flex-1 flex-col gap-1 rounded-lg p-4 border border-primary/20 bg-primary/5">
+<p class="text-primary/60 text-[10px] font-mono leading-none tracking-tighter uppercase">TOTAL_LINKS</p>
+<p class="text-white text-xl font-bold font-mono">1,284</p>
+</div>
+<div class="flex flex-1 flex-col gap-1 rounded-lg p-4 border border-primary/20 bg-primary/5">
+<p class="text-primary/60 text-[10px] font-mono leading-none tracking-tighter uppercase">TOTAL_CLICKS</p>
+<p class="text-white text-xl font-bold font-mono">42.5k</p>
+</div>
+</div>
+<!-- Recent Activity (Thumb zone transition) -->
+<div class="mt-4">
+<p class="text-[10px] font-mono text-primary/40 mb-3 tracking-widest">RECENT_LOGS</p>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 rounded bg-white/5 border-l-2 border-primary">
+<div>
+<p class="text-xs font-mono text-white/80">onyx.sh/x8k2</p>
+<p class="text-[10px] font-mono text-primary/40">github.com/onyx-cyber/core</p>
+</div>
+<span class="material-symbols-outlined text-primary/60 text-sm">content_copy</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded bg-white/5 border-l-2 border-primary/30">
+<div>
+<p class="text-xs font-mono text-white/80">onyx.sh/p91L</p>
+<p class="text-[10px] font-mono text-primary/40">dribbble.com/shots/291...</p>
+</div>
+<span class="material-symbols-outlined text-primary/60 text-sm">content_copy</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Interaction Area (Thumb Zone - Bottom 40%) -->
+<div class="w-full px-6 pt-6 pb-10 bg-gradient-to-t from-black via-black/90 to-transparent">
+<div class="flex flex-col gap-4">
+<!-- Status Micro-Text -->
+<div class="flex justify-between items-end px-1">
+<span class="text-[10px] font-mono text-primary tracking-tighter">ENTER_ORIGIN_URL</span>
+<span class="text-[10px] font-mono text-primary/30 uppercase">Protocol: HTTPS</span>
+</div>
+<!-- Phosphor TextField -->
+<div class="relative group">
+<div class="absolute -inset-0.5 bg-primary/20 rounded-lg blur opacity-30 group-focus-within:opacity-100 transition duration-500"></div>
+<div class="relative flex w-full items-stretch glass-panel rounded-lg overflow-hidden">
+<input class="flex w-full min-w-0 flex-1 bg-transparent border-none text-white placeholder:text-primary/30 p-4 text-sm font-mono focus:ring-0 focus:outline-none" placeholder="https://source.data/path..." type="text"/>
+<div class="flex items-center px-4 text-primary">
+<span class="material-symbols-outlined text-xl">link</span>
+</div>
+</div>
+</div>
+<!-- Generate Button -->
+<button class="inner-glow group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 bg-primary text-black transition-all hover:brightness-110 active:scale-[0.98]">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+<span class="font-bold text-sm tracking-[0.3em] font-display">GENERATE</span>
+<span class="material-symbols-outlined ml-2 text-xl">bolt</span>
+</button>
+<!-- Utility Links -->
+<div class="flex justify-center gap-6 mt-2">
+<button class="text-[10px] font-mono text-primary/50 flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">history</span> HISTORY
+                    </button>
+<button class="text-[10px] font-mono text-primary/50 flex items-center gap-1 hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">settings</span> PREFERENCES
+                    </button>
+</div>
+</div>
+</div>
+<!-- iOS Home Indicator Area -->
+<div class="h-8 w-full flex items-center justify-center">
+<div class="w-32 h-1 bg-white/20 rounded-full"></div>
+</div>
+</div>
+<!-- Background Grid Logic Visual -->
+<div class="fixed inset-0 pointer-events-none opacity-20 z-[-1]">
+<div class="absolute top-1/4 left-10 text-[8px] font-mono text-primary/40 rotate-90">COORD_X: 42.921</div>
+<div class="absolute bottom-1/3 right-10 text-[8px] font-mono text-primary/40 -rotate-90">SEC_LEVEL: ALPHA</div>
+<div class="absolute top-1/2 left-0 w-full h-[1px] bg-primary/5"></div>
+<div class="absolute left-1/2 top-0 w-[1px] h-full bg-primary/5"></div>
+</div>
+</body></html>

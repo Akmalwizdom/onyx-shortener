@@ -1,26 +1,264 @@
 @import "tailwindcss";
 
+/* ========================================
+   ONYX-CYBER-INDUSTRIAL DESIGN SYSTEM
+   ======================================== */
+
+/* Design Tokens */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colors */
+  --primary: #33E1FF;
+  --primary-rgb: 51, 225, 255;
+  --background: #000000;
+  --background-light: #f5f8f7;
+  --background-dark: #000000;
+  /* Onyx-Cyber theme */
+  --error: #ff4d00;
+  --error-rgb: 255, 77, 0;
+
+  /* Glass Effects */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(51, 225, 255, 0.1);
+  --glass-border-active: rgba(51, 225, 255, 0.4);
+
+  /* Typography */
+  --font-display: var(--font-display, "Space Grotesk", sans-serif);
+  /* Fallback */
+  --font-mono: var(--font-mono, "Space Mono", monospace);
+  /* Fallback */
 }
 
+/* Tailwind v4 Theme Extension */
 @theme inline {
+  --color-primary: var(--primary);
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background-light: var(--background-light);
+  --color-background-dark: var(--background-dark);
+  --color-error: var(--error);
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+  --font-family-display: var(--font-display);
+  --font-family-mono: var(--font-mono);
+  --font-family-cabinet: "Cabinet Grotesk", sans-serif;
+
+  --animate-pulse-fast: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glitch: glitch 1s linear infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base Styles */
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+  color: white;
+  font-family: var(--font-mono);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Noise Overlay (Global) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+.heading-style {
+  font-family: 'Cabinet Grotesk', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+/* Glassmorphism */
+.glass-node {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+.glass-panel {
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-panel-active {
+  border-color: var(--glass-border-active);
+  box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.1);
+}
+
+.ghosted-glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(51, 225, 255, 0.1);
+}
+
+/* Phosphor Glow Effects */
+.phosphor-glow {
+  filter: drop-shadow(0 0 8px rgba(51, 225, 255, 0.4));
+}
+
+.phosphor-pulse {
+  box-shadow: 0 0 15px rgba(51, 225, 255, 0.3);
+  border: 1px solid #33E1FF;
+}
+
+.lucid-mint-text {
+  color: #33E1FF;
+  text-shadow: 0 0 10px rgba(51, 225, 255, 0.4);
+}
+
+.ghosting {
+  opacity: 0.3;
+  filter: blur(2px);
+  transition: all 0.3s ease;
+}
+
+.ghosting:hover {
+  opacity: 0.6;
+  filter: blur(0.5px);
+}
+
+/* Loading Screen Effects */
+.data-stream-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  user-select: none;
+}
+
+.glitch-bar-container {
+  height: 1px;
+  background: rgba(51, 225, 255, 0.1);
+}
+
+.glitch-bar-fill {
+  height: 1px;
+  background: #33E1FF;
+  box-shadow: 0 0 8px #33E1FF;
+}
+
+/* History Archive Effects */
+.strikethrough-glitch {
+  position: relative;
+}
+
+.strikethrough-glitch::after {
+  content: '';
+  position: absolute;
+  left: -5%;
+  top: 50%;
+  width: 110%;
+  height: 1px;
+  background: rgba(51, 225, 255, 0.4);
+  box-shadow: 0 0 8px rgba(51, 225, 255, 0.2);
+}
+
+.ghosted {
+  opacity: 0.2;
+  filter: grayscale(1);
+}
+
+/* Animations */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(var(--primary-rgb), 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 16px rgba(var(--primary-rgb), 0.6);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--primary-rgb), 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--primary-rgb), 0.5);
+}
+
+/* Material Symbols Font Class */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+/* Selection */
+::selection {
+  background: rgba(var(--primary-rgb), 0.3);
+  color: white;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }

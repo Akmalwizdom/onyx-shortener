@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Onyx URL Shortener
 
-## Getting Started
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-38bdf8)
+![Status](https://img.shields.io/badge/Status-Active-success)
 
-First, run the development server:
+> **"Minimalist Link Manager. High Performance."**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Onyx is a modern, high-performance URL shortener designed for speed, privacy, and simplicity. It provides a clean, distraction-free interface for managing your links efficiently.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ⚡ Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Modern Interface**: Clean, minimalist design with glassmorphism elements.
+- **Instant Shortening**: Zero-friction input with auto-validation and protocol fixing.
+- **Real-time Analytics**: Live tracking of "Links Created" and "Total Clicks" via backend API.
+- **Smart Redirection**: Fast, root-level redirection (`domain.com/code`) powered by Edge-ready logic.
+- **Private History**: Local-first history storage for user privacy.
+- **Responsive**: Fully optimized for Desktop and Mobile experiences.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+- **Framework**: Next.js 15 (App Router)
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion
+- **Database**: PostgreSQL (via Neon Serverless)
+- **Fetching**: SWR (Stale-While-Revalidate)
+- **Icons**: Material Symbols & Phosphor
 
-To learn more about Next.js, take a look at the following resources:
+## 🚀 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/username/onyx-shortener.git
+    cd onyx-shortener
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-## Deploy on Vercel
+3.  **Setup Environment**
+    Create a `.env` file and add your database credentials:
+    ```env
+    DATABASE_URL=postgres://user:pass@host/db
+    NEXT_PUBLIC_BASE_URL=http://localhost:3000
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4.  **Run Development Server**
+    ```bash
+    npm run dev
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5.  Open [http://localhost:3000](http://localhost:3000)
+
+## 📸 Overview
+
+*Input Interface*
+> Simple input field with real-time validation and dynamic loading states.
+
+*Analytics Dashboard*
+> Live data visualization and usage usage statistics.
+
+---
+
+*"Start Small. Link Big."*

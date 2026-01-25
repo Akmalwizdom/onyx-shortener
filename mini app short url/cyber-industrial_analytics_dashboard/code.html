@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cyber-Industrial Analytics Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.cdnfonts.com/css/cabinet-grotesk" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#A7FFD2",
+                        "onyx": "#000000",
+                    },
+                    fontFamily: {
+                        "display": ["Cabinet Grotesk", "sans-serif"],
+                        "mono": ["Space Mono", "monospace"]
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-onyx text-white font-mono overflow-x-hidden;
+                background-color: #000000;
+                position: relative;
+            }
+            body::before {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+                opacity: 0.05;
+                pointer-events: none;
+                z-index: 9999;
+            }
+        }
+        .phosphor-glow {
+            filter: drop-shadow(0 0 8px rgba(167, 255, 210, 0.4));
+        }
+        .glass-node {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+        .ghosting {
+            opacity: 0.3;
+            filter: blur(2px);
+            transition: all 0.3s ease;
+        }
+        .ghosting:hover {
+            opacity: 0.6;
+            filter: blur(0.5px);
+        }
+        .heading-style {
+            font-family: 'Cabinet Grotesk', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen">
+<div class="relative flex h-full w-full flex-col max-w-[430px] mx-auto border-x border-white/10 min-h-screen bg-onyx">
+<header class="sticky top-0 z-50 flex items-center bg-onyx p-6 pb-4 justify-between border-b border-white/10">
+<div class="flex items-center gap-3">
+<div class="text-primary flex size-8 shrink-0 items-center justify-center border border-primary/40 rounded-sm">
+<span class="material-symbols-outlined text-xl">terminal</span>
+</div>
+<h1 class="text-white text-2xl heading-style tracking-tighter">LIVE_FEED</h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="size-1.5 rounded-full bg-primary shadow-[0_0_8px_#A7FFD2]"></div>
+<span class="text-[10px] font-mono text-primary uppercase tracking-widest">Active</span>
+</div>
+</div>
+</header>
+<main class="flex-1 pb-24">
+<section class="px-6 py-8">
+<div class="flex flex-col gap-1 mb-6">
+<div class="flex justify-between items-end">
+<p class="text-primary/60 text-[10px] font-mono uppercase tracking-[0.2em]">Click_Volume_Vector</p>
+<p class="text-primary text-[10px] font-mono">NODE_TX_409</p>
+</div>
+<p class="text-white text-5xl heading-style tracking-tighter mt-1">24.5K</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-primary text-sm">trending_up</span>
+<p class="text-primary text-[11px] font-mono font-medium">+12.4% <span class="text-white/30 ml-1">/ L24H</span></p>
+</div>
+</div>
+<div class="relative w-full h-[200px] mt-8">
+<svg class="w-full h-full phosphor-glow overflow-visible" preserveAspectRatio="none" viewBox="0 0 400 150">
+<path d="M0,130 L40,115 L80,140 L120,40 L160,90 L200,65 L240,145 L280,30 L320,110 L360,25 L400,55" fill="none" stroke="#A7FFD2" stroke-linejoin="miter" stroke-width="2.5"></path>
+</svg>
+<div class="flex justify-between mt-6 px-1 border-t border-white/5 pt-2">
+<p class="text-white/30 text-[9px] font-mono uppercase tracking-tighter">00:00</p>
+<p class="text-white/30 text-[9px] font-mono uppercase tracking-tighter">12:00</p>
+<p class="text-white/30 text-[9px] font-mono uppercase tracking-tighter">23:59</p>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 gap-4 px-6 pb-10">
+<div class="glass-node flex flex-col gap-2 rounded-sm border border-primary/30 p-5">
+<p class="text-primary/60 text-[10px] font-mono uppercase tracking-[0.3em]">TOTAL_HITS</p>
+<div class="flex items-end justify-between">
+<p class="text-white text-3xl font-mono font-bold tracking-tighter">84,209</p>
+<span class="material-symbols-outlined text-primary/40 text-xl">memory</span>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="glass-node flex-1 flex flex-col gap-2 rounded-sm border border-primary/30 p-5">
+<p class="text-primary/60 text-[10px] font-mono uppercase tracking-[0.1em]">UNIQUE_SOURCE</p>
+<p class="text-white text-2xl font-mono font-bold tracking-tighter">1,024</p>
+</div>
+<div class="glass-node flex-1 flex flex-col gap-2 rounded-sm border border-primary/30 p-5">
+<p class="text-primary/60 text-[10px] font-mono uppercase tracking-[0.1em]">AVG_LATENCY</p>
+<p class="text-white text-2xl font-mono font-bold tracking-tighter">24<span class="text-sm font-normal text-primary/60 ml-1">MS</span></p>
+</div>
+</div>
+</section>
+<div class="px-6 py-4 flex items-center justify-between">
+<h3 class="text-white text-xs heading-style tracking-[0.4em]">TOP_REFERRALS</h3>
+<div class="h-[1px] flex-1 bg-white/10 ml-6"></div>
+</div>
+<section class="px-4 space-y-2">
+<div class="flex items-center gap-4 px-4 min-h-[64px] py-2 justify-between border border-white/5 rounded-sm bg-white/[0.02]">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center rounded-sm bg-primary/10 border border-primary/20 shrink-0 size-10">
+<span class="material-symbols-outlined text-xl">alternate_email</span>
+</div>
+<div class="flex flex-col">
+<p class="text-white text-sm font-bold font-mono">twitter.com</p>
+<p class="text-white/40 text-[9px] font-mono uppercase tracking-widest mt-0.5">Social_Mesh_Feed</p>
+</div>
+</div>
+<p class="text-primary text-sm font-mono font-bold">42.1%</p>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[64px] py-2 justify-between ghosting">
+<div class="flex items-center gap-4">
+<div class="text-white/40 flex items-center justify-center rounded-sm border border-white/10 shrink-0 size-10">
+<span class="material-symbols-outlined text-xl">code</span>
+</div>
+<div class="flex flex-col">
+<p class="text-white/60 text-sm font-mono">github.com</p>
+<p class="text-white/20 text-[9px] font-mono uppercase">Dev_Inbound</p>
+</div>
+</div>
+<p class="text-white/40 text-sm font-mono">18.4%</p>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[64px] py-2 justify-between ghosting">
+<div class="flex items-center gap-4">
+<div class="text-white/40 flex items-center justify-center rounded-sm border border-white/10 shrink-0 size-10">
+<span class="material-symbols-outlined text-xl">public</span>
+</div>
+<div class="flex flex-col">
+<p class="text-white/60 text-sm font-mono">direct_entry</p>
+<p class="text-white/20 text-[9px] font-mono uppercase">Unknown_Proto</p>
+</div>
+</div>
+<p class="text-white/40 text-sm font-mono">12.0%</p>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-onyx border-t border-white/10 px-8 py-4 pb-8 flex justify-between items-center z-[100]">
+<button class="text-primary">
+<span class="material-symbols-outlined text-2xl">dashboard</span>
+</button>
+<button class="text-white/30">
+<span class="material-symbols-outlined text-2xl">link</span>
+</button>
+<button class="bg-primary text-black size-12 rounded-sm flex items-center justify-center -mt-10 border-[4px] border-onyx shadow-[0_0_20px_rgba(167,255,210,0.4)]">
+<span class="material-symbols-outlined font-bold">add</span>
+</button>
+<button class="text-white/30">
+<span class="material-symbols-outlined text-2xl">analytics</span>
+</button>
+<button class="text-white/30">
+<span class="material-symbols-outlined text-2xl">settings</span>
+</button>
+</nav>
+</div>
+
+</body></html>
