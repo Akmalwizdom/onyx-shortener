@@ -1,9 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
 import { sql } from '@/lib/db';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 // Use Edge runtime for faster response
 export const runtime = 'edge';
+
+// Initialize Rate Limiter (only if env vars are present)
+let ratelimit: Ratelimit | null = null;
+
+// Support both standard Upstash env vars and Vercel KV env vars
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+
+if (redisUrl && redisToken) {
+    ratelimit = new Ratelimit({
+        redis: new Redis({
+            url: redisUrl,
+            token: redisToken,
+        }),
+        limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 requests per minute
+        analytics: true,
+        prefix: "onyx_shortener_ratelimit",
+    });
+}
 
 /**
  * Validates if a string is a valid HTTP/HTTPS URL
@@ -23,6 +44,26 @@ function isValidUrl(url: string): boolean {
  */
 export async function POST(request: NextRequest) {
     try {
+        // 1. Rate Limiting Check
+        if (ratelimit) {
+            const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+            const { success, limit, reset, remaining } = await ratelimit.limit(ip);
+
+            if (!success) {
+                return NextResponse.json(
+                    { error: 'Too many requests. Please try again later.' },
+                    {
+                        status: 429,
+                        headers: {
+                            'X-RateLimit-Limit': limit.toString(),
+                            'X-RateLimit-Remaining': remaining.toString(),
+                            'X-RateLimit-Reset': reset.toString(),
+                        },
+                    }
+                );
+            }
+        }
+
         const body = await request.json();
         const { url, expiresIn, expiresAt } = body;
 
@@ -69,15 +110,44 @@ export async function POST(request: NextRequest) {
             expiresAtDate.setDate(expiresAtDate.getDate() + 30);
         }
 
-        // Generate unique short code
-        const shortCode = nanoid(7); // e.g., "xK92z7a"
+        // Generate unique short code with Retry Logic
+        let shortCode = '';
+        let newUrl = null;
+        let retries = 0;
+        const maxRetries = 3;
 
-        // Insert into database
-        const [newUrl] = await sql`
-      INSERT INTO urls (short_code, original_url, expires_at)
-      VALUES (${shortCode}, ${url}, ${expiresAtDate ? expiresAtDate.toISOString() : null})
-      RETURNING id, short_code, original_url, created_at, expires_at
-    `;
+        while (retries < maxRetries) {
+            try {
+                shortCode = nanoid(7); // e.g., "xK92z7a"
+
+                // Insert into database
+                const result = await sql`
+                    INSERT INTO urls (short_code, original_url, expires_at)
+                    VALUES (${shortCode}, ${url}, ${expiresAtDate ? expiresAtDate.toISOString() : null})
+                    RETURNING id, short_code, original_url, created_at, expires_at
+                `;
+                
+                if (result && result.length > 0) {
+                    newUrl = result[0];
+                    break; // Success, exit loop
+                }
+            } catch (err: any) {
+                // Check specifically for unique constraint violations
+                if (err.message && err.message.includes('unique')) {
+                    retries++;
+                    console.warn(`Collision detected for code ${shortCode}. Retrying (${retries}/${maxRetries})...`);
+                    continue;
+                }
+                throw err; // Re-throw other errors
+            }
+        }
+
+        if (!newUrl) {
+             return NextResponse.json(
+                { error: 'Failed to generate unique short code after multiple attempts. Please try again.' },
+                { status: 500 }
+            );
+        }
 
         // Get base URL from environment or request
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
@@ -98,15 +168,6 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Error creating short URL:', error);
-
-        // Check for unique constraint violation
-        if (error instanceof Error && error.message.includes('unique')) {
-            // Retry with a new short code (rare collision case)
-            return NextResponse.json(
-                { error: 'Failed to generate unique short code. Please try again.' },
-                { status: 500 }
-            );
-        }
 
         return NextResponse.json(
             { error: 'Internal server error' },

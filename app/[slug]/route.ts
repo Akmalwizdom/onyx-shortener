@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
+import { waitUntil } from '@vercel/functions';
 
 export const runtime = 'edge';
 
@@ -36,16 +37,17 @@ export async function GET(
             return NextResponse.redirect(new URL('/expired?reason=inactive', request.url));
         }
 
-        // Increment click count (Fire and forget for speed in edge mostly, but here we await to ensure it counts)
-        // In a real Edge environment, you might use context.waitUntil
+        // Increment click count (Fire and forget for speed using waitUntil)
         const referrer = request.headers.get('referer') || 'direct';
         const userAgent = request.headers.get('user-agent') || 'unknown';
 
-        // Update stats asynchronously (non-blocking if possible, but neon/postgres via http is fast)
-        await Promise.allSettled([
-            sql`UPDATE urls SET click_count = click_count + 1 WHERE id = ${url.id}`,
-            sql`INSERT INTO clicks (url_id, referrer, user_agent) VALUES (${url.id}, ${referrer}, ${userAgent})`
-        ]);
+        // Update stats asynchronously (non-blocking)
+        waitUntil(
+            Promise.allSettled([
+                sql`UPDATE urls SET click_count = click_count + 1 WHERE id = ${url.id}`,
+                sql`INSERT INTO clicks (url_id, referrer, user_agent) VALUES (${url.id}, ${referrer}, ${userAgent})`
+            ])
+        );
 
         return NextResponse.redirect(new URL(url.original_url));
 

@@ -12,9 +12,13 @@ function ShareContent() {
   const shortUrl = searchParams.get('short') || 'short.ly/error';
   const originalUrl = searchParams.get('original') || 'https://unknown-source.com';
   const [copied, setCopied] = useState(false);
+  const [canShare, setCanShare] = useState(false);
 
   useEffect(() => {
-    // Analytics or other side effects can go here
+    // Check if Web Share API is supported
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      setCanShare(true);
+    }
   }, []);
 
   const handleCopy = async () => {
@@ -24,6 +28,20 @@ function ShareContent() {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    try {
+      await navigator.share({
+        title: 'ONYX Short Link',
+        text: 'Check out this link I shortened with ONYX:',
+        url: shortUrl,
+      });
+    } catch (err) {
+      console.error('Share failed:', err);
+      // Fallback to copy if share fails or is cancelled
+      // Optional: show a toast here
     }
   };
 
@@ -84,13 +102,25 @@ function ShareContent() {
               <p className="text-white/30 text-xs font-normal leading-normal truncate px-4">{originalUrl}</p>
             </div>
             
-            <button 
-              onClick={handleCopy}
-              className="group relative flex w-full max-w-[200px] items-center justify-center overflow-hidden rounded-lg h-12 bg-primary text-black text-sm font-bold leading-normal tracking-[0.1em] transition-transform active:scale-95 hover:brightness-110 inner-glow"
-            >
-              <span className="truncate">{copied ? 'COPIED!' : 'COPY URL'}</span>
-               <span className="material-symbols-outlined ml-2 text-lg">content_copy</span>
-            </button>
+            <div className="flex w-full gap-3">
+              <button 
+                onClick={handleCopy}
+                className="group flex-1 relative flex items-center justify-center overflow-hidden rounded-lg h-12 bg-primary text-black text-sm font-bold leading-normal tracking-[0.1em] transition-transform active:scale-95 hover:brightness-110 inner-glow"
+              >
+                <span className="truncate">{copied ? 'COPIED!' : 'COPY'}</span>
+                <span className="material-symbols-outlined ml-2 text-lg">content_copy</span>
+              </button>
+
+              {canShare && (
+                <button 
+                  onClick={handleShare}
+                  className="group flex-1 relative flex items-center justify-center overflow-hidden rounded-lg h-12 bg-white/10 border border-white/10 text-white text-sm font-bold leading-normal tracking-[0.1em] transition-transform active:scale-95 hover:bg-white/20"
+                >
+                  <span className="truncate">SHARE</span>
+                  <span className="material-symbols-outlined ml-2 text-lg">ios_share</span>
+                </button>
+              )}
+            </div>
             
           </div>
           {/* Shadow Glow */}

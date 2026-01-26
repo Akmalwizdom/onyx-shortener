@@ -35,9 +35,38 @@ const cabinetGrotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ONYX URL Shortener",
-  description: "Cyber-Industrial URL Shortening Engine",
+  title: {
+    default: "ONYX | Cyber-Industrial URL Shortener",
+    template: "%s | ONYX"
+  },
+  description: "Advanced, privacy-focused URL shortener with real-time analytics and industrial-grade reliability.",
+  keywords: ["url shortener", "link shortener", "analytics", "privacy", "cyberpunk", "industrial design"],
+  authors: [{ name: "ONYX Team" }],
+  creator: "ONYX",
+  publisher: "ONYX",
   manifest: "/manifest.json",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://onyx.bapp.fun",
+    title: "ONYX | Cyber-Industrial URL Shortener",
+    description: "Shorten links with style. Real-time analytics, privacy-first, and a cyber-industrial aesthetic.",
+    siteName: "ONYX Shortener",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ONYX | Cyber-Industrial URL Shortener",
+    description: "Shorten links with style. Real-time analytics, privacy-first, and a cyber-industrial aesthetic.",
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png", // Assuming this might exist or will be added
+  }
 };
 
 export const viewport: Viewport = {
