@@ -3,7 +3,7 @@
  * This ensures "Private History" without a login system.
  */
 
-const STORAGE_KEY = 'ONYX_USER_HISTORY';
+const STORAGE_KEY = 'XYNO_USER_HISTORY';
 
 export function saveLinkToHistory(id: string) {
     if (typeof window === 'undefined') return;

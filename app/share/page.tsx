@@ -34,8 +34,8 @@ function ShareContent() {
   const handleShare = async () => {
     try {
       await navigator.share({
-        title: 'ONYX Short Link',
-        text: 'Check out this link I shortened with ONYX:',
+        title: 'XYNO Short Link',
+        text: 'Check out this link I shortened with XYNO:',
         url: shortUrl,
       });
     } catch (err) {

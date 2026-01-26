@@ -1,4 +1,4 @@
--- Neon PostgreSQL Database Schema for Onyx URL Shortener
+-- Neon PostgreSQL Database Schema for Xyno URL Shortener
 -- Run this script once to initialize your database
 
 -- URLs table (stores short code to original URL mapping)

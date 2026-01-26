@@ -22,7 +22,7 @@ export function TopNav({ className }: TopNavProps) {
           terminal
         </span>
         <h2 className="text-primary font-mono text-sm tracking-[0.2em] font-bold">
-          ONYX_v.01
+          XYNO_v.01
         </h2>
       </Link>
 

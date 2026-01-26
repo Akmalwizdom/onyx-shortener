@@ -16,7 +16,7 @@ export async function checkUrlWithSafeBrowsing(urlToCheck: string): Promise<bool
             key: apiKey,
             requestBody: {
                 client: {
-                    clientId: 'onyx-shortener-app', // A unique client ID for your application
+                    clientId: 'xyno-shortener-app', // A unique client ID for your application
                     clientVersion: '1.0.0',          // The version of your application
                 },
                 threatInfo: {

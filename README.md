@@ -1,4 +1,4 @@
-# Onyx URL Shortener
+# Xyno URL Shortener
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
@@ -7,7 +7,7 @@
 
 > **"Minimalist Link Manager. High Performance."**
 
-Onyx is a modern, high-performance URL shortener designed for speed, privacy, and simplicity. It provides a clean, distraction-free interface for managing your links efficiently.
+Xyno is a modern, high-performance URL shortener designed for speed, privacy, and simplicity. It provides a clean, distraction-free interface for managing your links efficiently.
 
 ## ⚡ Key Features
 
@@ -31,8 +31,8 @@ Onyx is a modern, high-performance URL shortener designed for speed, privacy, an
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/username/onyx-shortener.git
-    cd onyx-shortener
+    git clone https://github.com/username/xyno-shortener.git
+    cd xyno-shortener
     ```
 
 2.  **Install Dependencies**

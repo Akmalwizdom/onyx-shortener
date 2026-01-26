@@ -31,7 +31,7 @@ export function Navbar() {
         </div>
         <div className="flex flex-col">
             <h1 className="text-white font-bold tracking-tighter italic font-display leading-none">
-            ONYX<span className="text-primary">.IO</span>
+            XYNO<span className="text-primary">.APP</span>
             </h1>
         </div>
       </Link>
