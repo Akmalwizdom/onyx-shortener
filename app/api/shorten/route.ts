@@ -5,8 +5,8 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { checkUrlWithSafeBrowsing } from '@/lib/safeBrowsing';
 
-// Use Edge runtime for faster response
-export const runtime = 'edge';
+// Use Node.js runtime because 'googleapis' library requires it
+export const runtime = 'nodejs';
 
 // Initialize Rate Limiter (only if env vars are present)
 let ratelimit: Ratelimit | null = null;
