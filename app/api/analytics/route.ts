@@ -19,7 +19,7 @@ export async function GET() {
             sql`
         SELECT referrer, COUNT(*) as count 
         FROM clicks 
-        WHERE referrer IS NOT NULL 
+        WHERE referrer IS NOT NULL AND referrer != 'direct'
         GROUP BY referrer 
         ORDER BY count DESC 
         LIMIT 3
