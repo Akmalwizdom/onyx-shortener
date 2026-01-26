@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import { sql } from '@/lib/db';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { checkUrlWithSafeBrowsing } from '@/lib/safeBrowsing';
 
 // Use Edge runtime for faster response
 export const runtime = 'edge';
@@ -20,7 +21,7 @@ if (redisUrl && redisToken) {
             url: redisUrl,
             token: redisToken,
         }),
-        limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 requests per minute
+        limiter: Ratelimat.slidingWindow(5, "1 m"), // 5 requests per minute
         analytics: true,
         prefix: "onyx_shortener_ratelimit",
     });
@@ -80,6 +81,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json(
                 { error: 'Invalid URL format. Must be a valid HTTP or HTTPS URL.' },
                 { status: 400 }
+            );
+        }
+
+        // 2. Malicious URL Check (Google Safe Browsing API)
+        // NOTE: Google Safe Browsing API is for non-commercial use.
+        // For commercial use, consider Google Web Risk API or a similar commercial service.
+        const isUnsafe = await checkUrlWithSafeBrowsing(url);
+        if (isUnsafe) {
+            return NextResponse.json(
+                { error: 'This URL has been flagged as unsafe. We cannot shorten it.' },
+                { status: 403 }
             );
         }
 
