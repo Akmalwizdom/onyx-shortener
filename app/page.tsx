@@ -8,6 +8,7 @@ import { BottomNav } from '@/components/navigation/BottomNav';
 import { StatsBlock } from '@/components/stats/StatsBlock';
 import { UrlInputNode } from '@/components/url/UrlInputNode';
 import { ErrorNode } from '@/components/url/ErrorNode';
+import { CyberLoading } from '@/components/url/CyberLoading';
 import { useUrlShortener } from '@/hooks/useUrlShortener';
 import { staggerContainer, fadeInUp } from '@/lib/animations';
 import { useArchive, type Link as ArchiveLink } from '@/hooks/useArchive';
@@ -40,6 +41,20 @@ export default function Home() {
 
   return (
     <ResponsiveContainer>
+      {/* Full Screen Loading Overlay */}
+      <AnimatePresence>
+        {state === 'LOADING' && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          >
+            <CyberLoading />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Mobile Top Navigation (Hidden on Desktop) */}
       <div className="md:hidden">
         <TopNav />
