@@ -37,13 +37,17 @@ if (redisUrl && redisToken) {
 /**
  * Helper: Check Rate Limit
  */
-async function checkRateLimit(request: NextRequest) {
+// Modified Helper: Check Rate Limit to return type
+async function checkRateLimit(request: NextRequest): Promise<{ result: any, type: 'daily' | 'minute' | 'none' }> {
     if (!ratelimitDaily || !ratelimitMinute) {
         return {
-            success: true,
-            limit: 0,
-            remaining: 0,
-            reset: 0
+            result: {
+                success: true,
+                limit: 0,
+                remaining: 0,
+                reset: 0
+            },
+            type: 'none'
         };
     }
     const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
@@ -55,18 +59,17 @@ async function checkRateLimit(request: NextRequest) {
 
     // If either limit fails, return the failed result
     if (!dailyResult.success) {
-        return dailyResult;
+        return { result: dailyResult, type: 'daily' };
     }
     if (!minuteResult.success) {
-        return minuteResult;
+        return { result: minuteResult, type: 'minute' };
     }
 
-    // Both succeeded, return the result with the lower remaining count or reset
-    // This ensures the client sees the most restrictive active limit
+    // Both succeeded, return the result with the lower remaining count
     if (dailyResult.remaining <= minuteResult.remaining) {
-        return dailyResult;
+        return { result: dailyResult, type: 'daily' };
     } else {
-        return minuteResult;
+        return { result: minuteResult, type: 'minute' };
     }
 }
 
@@ -129,15 +132,34 @@ async function createShortUrlRecord(url: string, expiresAt: Date | null) {
 export async function POST(request: NextRequest) {
     try {
         // 1. Rate Limiting
-        const { success, limit, reset, remaining } = await checkRateLimit(request);
-        if (!success) {
+        const { result, type } = await checkRateLimit(request);
+
+        if (!result.success) {
+            const now = Date.now();
+            const resetInMs = result.reset - now;
+            const resetInSeconds = Math.ceil(resetInMs / 1000);
+
+            let errorMessage = 'Too many requests. Please try again later.';
+
+            if (type === 'minute') {
+                errorMessage = `Whoa, slow down! You can shorten another link in ${resetInSeconds} seconds.`;
+            } else if (type === 'daily') {
+                const hours = Math.ceil(resetInSeconds / 3600);
+                const minutes = Math.ceil(resetInSeconds / 60);
+                if (hours > 1) {
+                    errorMessage = `Daily limit reached (20 links/day). Resets in about ${hours} hours.`;
+                } else {
+                    errorMessage = `Daily limit reached (20 links/day). Resets in ${minutes} minutes.`;
+                }
+            }
+
             return NextResponse.json(
-                { error: 'Too many requests. Please try again later.' },
+                { error: errorMessage },
                 {
                     status: 429, headers: {
-                        'X-RateLimit-Limit': limit!.toString(),
-                        'X-RateLimit-Remaining': remaining!.toString(),
-                        'X-RateLimit-Reset': reset!.toString(),
+                        'X-RateLimit-Limit': result.limit.toString(),
+                        'X-RateLimit-Remaining': result.remaining.toString(),
+                        'X-RateLimit-Reset': result.reset.toString(),
                     }
                 }
             );

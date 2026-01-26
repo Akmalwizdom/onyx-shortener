@@ -28,10 +28,10 @@ export function ErrorNode({
       {/* Error Header */}
       <div className="flex items-center gap-2">
         <span className="material-symbols-outlined text-error text-2xl">
-          error
+          {message.toLowerCase().includes('limit') || message.toLowerCase().includes('slow down') ? 'timer' : 'error'}
         </span>
         <span className="text-error text-[10px] font-mono tracking-[0.2em] font-bold uppercase">
-          FATAL_ERROR
+          {message.toLowerCase().includes('limit') || message.toLowerCase().includes('slow down') ? 'RATE_LIMIT' : 'ERROR'}
         </span>
       </div>
 
