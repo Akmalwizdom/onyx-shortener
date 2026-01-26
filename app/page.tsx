@@ -7,7 +7,6 @@ import { TopNav } from '@/components/navigation/TopNav';
 import { BottomNav } from '@/components/navigation/BottomNav';
 import { StatsBlock } from '@/components/stats/StatsBlock';
 import { UrlInputNode } from '@/components/url/UrlInputNode';
-import { CyberLoading } from '@/components/url/CyberLoading';
 import { ErrorNode } from '@/components/url/ErrorNode';
 import { useUrlShortener } from '@/hooks/useUrlShortener';
 import { staggerContainer, fadeInUp } from '@/lib/animations';
@@ -207,7 +206,7 @@ export default function Home() {
 
 
       {/* Mobile: Bottom Interaction Area (Thumb Zone - Bottom) */}
-      <div className="md:hidden w-full px-6 pt-6 pb-24 bg-gradient-to-t from-black via-black/90 to-transparent mt-auto sticky bottom-0 z-20">
+      <div className="md:hidden w-full px-6 pt-6 pb-24 bg-black border-t border-white/10 mt-auto sticky bottom-0 z-20">
         <AnimatePresence mode="wait">
           {(state === 'IDLE' || state === 'ERROR') && (
             <motion.div

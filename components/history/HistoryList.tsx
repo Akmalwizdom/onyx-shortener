@@ -121,16 +121,26 @@ export function HistoryList({
       </motion.div>
 
       {/* Load More Link */}
+      {/* Infinite Scroll Trigger */}
       {!isReachingEnd && (
-         <div className="flex justify-center pt-8 pb-20">
-            <button 
-              disabled={isLoadingMore}
-              onClick={() => setSize(size + 1)}
-              className="px-6 py-2 rounded border border-primary/20 text-primary font-mono text-xs hover:bg-primary/10 transition-colors disabled:opacity-50"
-            >
-                {isLoadingMore ? 'Loading...' : 'Load More'}
-            </button>
-         </div>
+         <motion.div 
+           onViewportEnter={() => {
+              if (!isLoadingMore) {
+                setSize(size + 1);
+              }
+           }}
+           className="flex justify-center pt-8 pb-20"
+         >
+            <div className="flex items-center gap-2 px-6 py-2 rounded text-primary/50 font-mono text-xs">
+                {isLoadingMore && (
+                  <>
+                    <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '0ms' }}/>
+                    <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '150ms' }}/>
+                    <span className="w-2 h-2 rounded-full bg-primary/50 animate-bounce" style={{ animationDelay: '300ms' }}/>
+                  </>
+                )}
+            </div>
+         </motion.div>
       )}
     </>
   );

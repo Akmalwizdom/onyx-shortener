@@ -57,7 +57,7 @@ const fetcher = async (arg: any, ...rest: any[]) => {
     return json;
 };
 
-export function useArchive(filter: 'recent' | 'active' | 'expired' = 'recent', limit: number = 20) {
+export function useArchive(filter: 'recent' | 'active' | 'expired' = 'recent', limit: number = 10) {
     const getKey = (pageIndex: number, previousPageData: ApiResponse) => {
         if (previousPageData && !previousPageData.data.length) return null; // Reached the end
 

@@ -21,6 +21,8 @@ interface AnalyticsData {
 
 const fetcher = (url: string) => fetch(url).then(res => res.json().then(json => json.data));
 
+const EMPTY_ARRAY: number[] = [];
+
 export default function AnalyticsPage() {
   // Poll every 3 seconds for "Live" feel
   const { data } = useSWR<AnalyticsData>('/api/analytics', fetcher, {
@@ -35,14 +37,14 @@ export default function AnalyticsPage() {
   const uniqueSources = data?.uniqueSources ?? 0;
   // const avgLatency = data?.avgLatency ?? 0;
   const referrals = data?.referrals || [];
-  const chartValues = data?.chartData || [];
+  const chartValues = data?.chartData || EMPTY_ARRAY;
 
   // Generate SVG Path for Chart
   const chartPath = useMemo(() => {
     if (!chartValues.length) return "M0,150 L400,150";
 
     const max = Math.max(...chartValues, 10); // Minimum scale of 10
-    const points = chartValues.map((val, i) => {
+    const points = chartValues.map((val: number, i: number) => {
       const x = (i / (chartValues.length - 1)) * 400;
       const y = 150 - (val / max) * 120; // 150 height, 120 max drawn height (keep padding)
       return `${x},${y}`;
@@ -56,7 +58,7 @@ export default function AnalyticsPage() {
   const linePath = useMemo(() => {
     if (!chartValues.length) return "";
     const max = Math.max(...chartValues, 10); 
-    return chartValues.map((val, i) => {
+    return chartValues.map((val: number, i: number) => {
       const x = (i / (chartValues.length - 1)) * 400;
       const y = 150 - (val / max) * 120;
       return `${i===0?'M':'L'}${x},${y}`;
@@ -81,10 +83,10 @@ export default function AnalyticsPage() {
       <div className="hidden md:flex items-center justify-between mb-8 pt-2">
          <div>
             <h1 className="text-white text-3xl font-bold leading-none tracking-tighter italic font-display">
-                Real-time Overview
+                Global Overview
             </h1>
             <p className="font-mono text-xs text-primary/40 tracking-widest mt-1">
-                Live Analytics
+                Live Platform Stats
             </p>
          </div>
       </div>
@@ -105,7 +107,7 @@ export default function AnalyticsPage() {
                   <div className="flex flex-col gap-1 mb-6">
                     <div className="flex justify-between items-end">
                       <p className="text-primary/60 text-[10px] font-mono uppercase tracking-[0.2em]">
-                        Total Clicks
+                        Total Global Clicks
                       </p>
                     </div>
                     {loading ? (
@@ -166,7 +168,7 @@ export default function AnalyticsPage() {
                 {/* Sub-Stats Grid */}
                 <motion.section className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 md:px-0 mt-4 md:mt-8 pb-10 md:pb-0" variants={fadeInUp}>
                   <div className="glass-node flex flex-col gap-2 rounded-sm border border-primary/30 p-5">
-                    <p className="text-primary/60 text-[10px] font-mono uppercase tracking-[0.3em]">TOTAL CLICKS</p>
+                    <p className="text-primary/60 text-[10px] font-mono uppercase tracking-[0.3em]">GLOBAL CLICKS</p>
                     <div className="flex items-end justify-between">
                       <p className="text-white text-3xl font-mono font-bold tracking-tighter">
                         {loading ? '...' : totalClicks.toLocaleString()}
@@ -177,7 +179,7 @@ export default function AnalyticsPage() {
                   
                   {/* Wrappers to match grid styles on mobile */}
                   <div className="glass-node flex-1 flex flex-col gap-2 rounded-sm border border-primary/30 p-5">
-                      <p className="text-primary/60 text-[10px] font-mono uppercase tracking-[0.1em]">UNIQUE SOURCES</p>
+                      <p className="text-primary/60 text-[10px] font-mono uppercase tracking-[0.1em]">GLOBAL SOURCES</p>
                       <p className="text-white text-2xl font-mono font-bold tracking-tighter">
                         {loading ? '...' : uniqueSources.toLocaleString()}
                       </p>
@@ -189,7 +191,7 @@ export default function AnalyticsPage() {
             {/* Right Column: Referrals (Desktop Sidebar-style) */}
             <div className="md:col-span-4 flex flex-col">
                 <div className="px-6 py-4 md:px-0 md:py-0 flex items-center justify-between md:mb-4">
-                  <h3 className="text-white text-xs heading-style tracking-[0.4em]">TOP SOURCES</h3>
+                  <h3 className="text-white text-xs heading-style tracking-[0.4em]">TOP GLOBAL SOURCES</h3>
                   <div className="h-[1px] flex-1 bg-white/10 ml-6 md:hidden"></div>
                 </div>
 
