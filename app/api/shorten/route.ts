@@ -21,7 +21,7 @@ if (redisUrl && redisToken) {
             url: redisUrl,
             token: redisToken,
         }),
-        limiter: Ratelimat.slidingWindow(5, "1 m"), // 5 requests per minute
+        limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 requests per minute
         analytics: true,
         prefix: "onyx_shortener_ratelimit",
     });
