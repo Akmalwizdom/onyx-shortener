@@ -63,7 +63,15 @@ export function HistoryList({
             {/* Top Status Bar (Unified) */}
             <div className="flex justify-between items-start mb-2">
                <span className="text-[10px] font-mono text-primary font-bold tracking-widest uppercase">Active</span>
-               <span className="material-symbols-outlined text-primary/50 text-xs">arrow_outward</span>
+               <a 
+                 href={link.shortUrl} 
+                 target="_blank" 
+                 rel="noopener"
+                 className="flex items-center justify-center hover:scale-110 transition-transform"
+                 title="Open Link"
+               >
+                  <span className="material-symbols-outlined text-primary/50 text-xs hover:text-primary transition-colors">arrow_outward</span>
+               </a>
             </div>
 
             <div className="flex-1 flex flex-col justify-center my-2">
