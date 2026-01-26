@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { cn, isValidUrl } from '@/lib/utils';
 
 interface UrlInputNodeProps {
   onSubmit: (url: string) => void;
@@ -28,21 +28,7 @@ export function UrlInputNode({ onSubmit, isLoading = false, className }: UrlInpu
     }
   }, [localError]);
 
-  const validateUrl = (value: string) => {
-    if (!value) return false;
-    try {
-      new URL(value);
-      return true;
-    } catch {
-      // Try adding https://
-      try {
-        new URL(`https://${value}`);
-        return true;
-      } catch {
-        return false;
-      }
-    }
-  };
+
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +42,7 @@ export function UrlInputNode({ onSubmit, isLoading = false, className }: UrlInpu
         trimmedUrl = `https://${trimmedUrl}`;
     }
 
-    if (!validateUrl(trimmedUrl)) {
+    if (!isValidUrl(trimmedUrl)) {
       setLocalError('Invalid URL format');
       return;
     }

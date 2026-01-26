@@ -25,15 +25,7 @@ export default function HistoryPage() {
     setIsMounted(true);
   }, []);
 
-  useEffect(() => {
-    console.log('[ARCHIVE_DEBUG] Data Updated:', {
-      filter,
-      linkCount: links?.length,
-      isLoading,
-      isError: isError?.message || isError,
-      isValidating
-    });
-  }, [filter, links, isLoading, isError, isValidating]);
+
 
   return (
     <ResponsiveContainer>
