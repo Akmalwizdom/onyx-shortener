@@ -9,17 +9,28 @@ import { isValidUrl } from '@/lib/utils'; // Shared validation
 // Use Node.js runtime because 'googleapis' library requires it
 export const runtime = 'nodejs';
 
-// Initialize Rate Limiter
-let ratelimit: Ratelimit | null = null;
+// Initialize Rate Limiters
+let ratelimitDaily: Ratelimit | null = null;
+let ratelimitMinute: Ratelimit | null = null;
+
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 
 if (redisUrl && redisToken) {
-    ratelimit = new Ratelimit({
-        redis: new Redis({ url: redisUrl, token: redisToken }),
-        limiter: Ratelimit.slidingWindow(20, "1 d"), // 20 requests per day (Public WiFi Friendly)
+    const redis = new Redis({ url: redisUrl, token: redisToken });
+
+    ratelimitDaily = new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(20, "1 d"), // 20 requests per day
         analytics: true,
-        prefix: "xyno_shortener_ratelimit",
+        prefix: "xyno_shortener_ratelimit_daily", // Use a different prefix
+    });
+
+    ratelimitMinute = new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(3, "1 m"), // 3 requests per minute
+        analytics: true,
+        prefix: "xyno_shortener_ratelimit_minute", // Use a different prefix
     });
 }
 
@@ -27,7 +38,7 @@ if (redisUrl && redisToken) {
  * Helper: Check Rate Limit
  */
 async function checkRateLimit(request: NextRequest) {
-    if (!ratelimit) {
+    if (!ratelimitDaily || !ratelimitMinute) {
         return {
             success: true,
             limit: 0,
@@ -36,7 +47,27 @@ async function checkRateLimit(request: NextRequest) {
         };
     }
     const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
-    return await ratelimit.limit(ip);
+
+    const [dailyResult, minuteResult] = await Promise.all([
+        ratelimitDaily.limit(ip),
+        ratelimitMinute.limit(ip),
+    ]);
+
+    // If either limit fails, return the failed result
+    if (!dailyResult.success) {
+        return dailyResult;
+    }
+    if (!minuteResult.success) {
+        return minuteResult;
+    }
+
+    // Both succeeded, return the result with the lower remaining count or reset
+    // This ensures the client sees the most restrictive active limit
+    if (dailyResult.remaining <= minuteResult.remaining) {
+        return dailyResult;
+    } else {
+        return minuteResult;
+    }
 }
 
 /**
