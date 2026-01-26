@@ -38,7 +38,7 @@ export async function GET(
         }
 
         // Increment click count (Fire and forget for speed using waitUntil)
-        const referrer = request.headers.get('referer') || 'direct';
+        const referrer = request.headers.get('referer') || null;
         const userAgent = request.headers.get('user-agent') || 'unknown';
 
         // Update stats asynchronously (non-blocking)

@@ -111,6 +111,16 @@ function ShareContent() {
                 <span className="material-symbols-outlined ml-2 text-lg">content_copy</span>
               </button>
 
+              <a
+                href={shortUrl}
+                target="_blank"
+                rel="noopener"
+                className="group flex-none relative flex items-center justify-center overflow-hidden rounded-lg h-12 w-12 bg-white/10 border border-white/10 text-white text-sm font-bold leading-normal transition-transform active:scale-95 hover:bg-white/20"
+                title="Visit Link"
+              >
+                <span className="material-symbols-outlined text-xl">open_in_new</span>
+              </a>
+
               {canShare && (
                 <button 
                   onClick={handleShare}
