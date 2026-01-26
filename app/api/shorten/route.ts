@@ -17,7 +17,7 @@ const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_A
 if (redisUrl && redisToken) {
     ratelimit = new Ratelimit({
         redis: new Redis({ url: redisUrl, token: redisToken }),
-        limiter: Ratelimit.slidingWindow(5, "1 m"), // 5 requests per minute
+        limiter: Ratelimit.slidingWindow(5, "1 d"), // 5 requests per day
         analytics: true,
         prefix: "xyno_shortener_ratelimit",
     });
