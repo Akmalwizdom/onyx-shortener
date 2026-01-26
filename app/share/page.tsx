@@ -16,7 +16,7 @@ function ShareContent() {
 
   useEffect(() => {
     // Check if Web Share API is supported
-    if (typeof navigator !== 'undefined' && navigator.share) {
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       setCanShare(true);
     }
   }, []);
