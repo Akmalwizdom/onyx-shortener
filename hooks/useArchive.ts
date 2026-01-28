@@ -1,4 +1,5 @@
 import useSWRInfinite from 'swr/infinite';
+import { useAccount } from 'wagmi';
 import { getHistoryIds, clearLocalHistory } from '@/utils/storage';
 
 export type Link = {
@@ -58,19 +59,23 @@ const fetcher = async (arg: any, ...rest: any[]) => {
 };
 
 export function useArchive(filter: 'recent' | 'active' | 'expired' = 'recent', limit: number = 10) {
+    const { address } = useAccount();
+
     const getKey = (pageIndex: number, previousPageData: ApiResponse) => {
         if (previousPageData && !previousPageData.data.length) return null; // Reached the end
 
-        // [PRIVACY] Only fetch links that belong to this user (from local storage)
+        // [HYBRID] Fetch links from local history AND wallet address
         const localIds = getHistoryIds();
-        if (localIds.length === 0) return null; // No history locally, don't fetch anything
 
-        // Pass arguments for POST request
+        // If no local history AND no wallet connected, nothing to fetch
+        if (localIds.length === 0 && !address) return null;
+
         return ['/api/links', {
             filter,
             page: pageIndex + 1,
             limit,
-            ids: localIds
+            ids: localIds,
+            walletAddress: address
         }];
     };
 
@@ -87,8 +92,8 @@ export function useArchive(filter: 'recent' | 'active' | 'expired' = 'recent', l
 
     const links = data ? data.flatMap(page => page.data) : [];
 
-    // If we have no local IDs, we are not loading, just empty.
-    const hasLocalHistory = typeof window !== 'undefined' && getHistoryIds().length > 0;
+    // If we have no local IDs and no address, we are not loading, just empty.
+    const hasLocalHistory = typeof window !== 'undefined' && (getHistoryIds().length > 0 || !!address);
     const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
     const isEmpty = !hasLocalHistory || (data?.[0]?.data?.length === 0);
     const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < limit);

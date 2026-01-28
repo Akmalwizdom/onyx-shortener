@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 
-async function fetchLinks(params: { ids?: string[], filter?: string | null, page?: number, limit?: number, host: string }) {
-  const { ids, filter = 'recent', page = 1, limit = 20, host } = params;
+async function fetchLinks(params: { ids?: string[], walletAddress?: string | null, filter?: string | null, page?: number, limit?: number, host: string }) {
+  const { ids, walletAddress, filter = 'recent', page = 1, limit = 20, host } = params;
   const offset = (page! - 1) * limit!;
 
   // [PRIVACY ENFORCEMENT]
-  // If no IDs are provided, we do NOT return any links.
-  if (!ids || ids.length === 0) {
+  // If no IDs and no wallet address, return empty
+  if ((!ids || ids.length === 0) && !walletAddress) {
     return { success: true, data: [] };
   }
+
+  const idsArray = ids || [];
 
   let result;
   // Safety check for limit
@@ -32,7 +34,7 @@ async function fetchLinks(params: { ids?: string[], filter?: string | null, page
         FROM urls 
         WHERE is_active = true 
           AND (expires_at IS NULL OR expires_at > NOW())
-          AND id = ANY(${ids})
+          AND (id = ANY(${idsArray}) OR (creator_wallet IS NOT NULL AND creator_wallet = ${walletAddress}))
         ORDER BY created_at DESC
         LIMIT ${safeLimit} OFFSET ${offset}
       `;
@@ -41,7 +43,7 @@ async function fetchLinks(params: { ids?: string[], filter?: string | null, page
         SELECT ${selectFields}
         FROM urls 
         WHERE (is_active = false OR expires_at <= NOW())
-          AND id = ANY(${ids})
+          AND (id = ANY(${idsArray}) OR (creator_wallet IS NOT NULL AND creator_wallet = ${walletAddress}))
         ORDER BY created_at DESC
         LIMIT ${safeLimit} OFFSET ${offset}
       `;
@@ -50,7 +52,7 @@ async function fetchLinks(params: { ids?: string[], filter?: string | null, page
     result = await sql`
         SELECT ${selectFields}
         FROM urls 
-        WHERE id = ANY(${ids})
+        WHERE (id = ANY(${idsArray}) OR (creator_wallet IS NOT NULL AND creator_wallet = ${walletAddress}))
         ORDER BY created_at DESC 
         LIMIT ${safeLimit} OFFSET ${offset}
       `;
@@ -80,6 +82,7 @@ export async function GET(request: Request) {
     const filter = searchParams.get('filter');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
+    const walletAddress = searchParams.get('walletAddress');
 
     // Legacy: IDs from query param
     const idsParam = searchParams.get('ids');
@@ -87,7 +90,7 @@ export async function GET(request: Request) {
 
     const host = request.headers.get('host') || 'localhost:3000';
 
-    const result = await fetchLinks({ ids, filter, page, limit, host });
+    const result = await fetchLinks({ ids, walletAddress, filter, page, limit, host });
     return NextResponse.json(result);
 
   } catch (error) {
@@ -102,10 +105,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { ids, filter, page, limit } = body;
+    const { ids, walletAddress, filter, page, limit } = body;
     const host = request.headers.get('host') || 'localhost:3000';
 
-    const result = await fetchLinks({ ids, filter, page, limit, host });
+    const result = await fetchLinks({ ids, walletAddress, filter, page, limit, host });
     return NextResponse.json(result);
 
   } catch (error) {

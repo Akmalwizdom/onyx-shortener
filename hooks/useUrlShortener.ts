@@ -27,6 +27,7 @@ interface UseUrlShortenerResult {
     error: string | null;
     errorCode: string | number | null;
     resetTime: number | null;
+    quota: { remaining: number, limit: number } | null;
     submit: (url: string, accessPolicy?: AccessPolicy) => Promise<void>;
     retry: () => void;
     reset: () => void;
@@ -38,6 +39,7 @@ export function useUrlShortener(): UseUrlShortenerResult {
     const [error, setError] = useState<string | null>(null);
     const [errorCode, setErrorCode] = useState<string | number | null>(null);
     const [resetTime, setResetTime] = useState<number | null>(null);
+    const [quota, setQuota] = useState<{ remaining: number, limit: number } | null>(null);
 
     // Store last submission for retry
     const [lastSubmission, setLastSubmission] = useState<{ url: string, policy?: AccessPolicy } | null>(null);
@@ -71,8 +73,11 @@ export function useUrlShortener(): UseUrlShortenerResult {
 
             if (!response.ok) {
                 setErrorCode(response.status);
-                if (response.status === 429 && data.reset) {
-                    setResetTime(data.reset);
+                if (response.status === 429) {
+                    if (data.reset) setResetTime(data.reset);
+                    if (data.remaining !== undefined) {
+                        setQuota({ remaining: data.remaining, limit: data.limit });
+                    }
                 }
                 throw new Error(data.error || 'Failed to shorten URL');
             }
@@ -87,6 +92,10 @@ export function useUrlShortener(): UseUrlShortenerResult {
                 originalUrl: data.data.originalUrl,
                 createdAt: new Date(data.data.createdAt),
             });
+
+            if (data.data.quota) {
+                setQuota(data.data.quota);
+            }
 
             // Save to local private history
             if (data.data.id) {
@@ -122,6 +131,7 @@ export function useUrlShortener(): UseUrlShortenerResult {
         error,
         errorCode,
         resetTime,
+        quota,
         submit,
         retry,
         reset,

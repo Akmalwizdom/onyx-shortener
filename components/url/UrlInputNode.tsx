@@ -16,10 +16,11 @@ export type AccessPolicy = {
 interface UrlInputNodeProps {
   onSubmit: (url: string, accessPolicy: AccessPolicy) => void;
   isLoading?: boolean;
+  quota?: { remaining: number, limit: number } | null;
   className?: string;
 }
 
-export function UrlInputNode({ onSubmit, isLoading = false, className }: UrlInputNodeProps) {
+export function UrlInputNode({ onSubmit, isLoading = false, quota, className }: UrlInputNodeProps) {
   const [url, setUrl] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
   const [isGateOpen, setIsGateOpen] = useState(false);
@@ -189,6 +190,21 @@ export function UrlInputNode({ onSubmit, isLoading = false, className }: UrlInpu
             <div className="flex items-center gap-2 px-1 text-error">
                 <span className="material-symbols-outlined text-sm">error</span>
                 <span className="text-xs font-mono">{localError}</span>
+            </div>
+        )}
+
+        {/* Quota Indicator */}
+        {quota && (
+            <div className="flex justify-between items-center px-1">
+                <span className="text-[9px] font-mono text-white/30 tracking-widest uppercase">
+                    Daily Quota
+                </span>
+                <span className={cn(
+                    "text-[10px] font-mono font-bold tracking-widest",
+                    quota.remaining === 0 ? "text-error" : (quota.remaining < 3 ? "text-orange-400" : "text-primary/60")
+                )}>
+                    {quota.remaining}/{quota.limit} REMAINING
+                </span>
             </div>
         )}
 

@@ -20,7 +20,7 @@ import { ResponsiveContainer } from '@/components/layout/ResponsiveContainer';
 const fetcher = (url: string) => fetch(url).then(res => res.json().then(json => json.data));
 
 export default function Home() {
-  const { state, shortUrl, error, errorCode, resetTime, submit, retry } = useUrlShortener();
+  const { state, shortUrl, error, errorCode, resetTime, quota, submit, retry } = useUrlShortener();
   const { showToast } = useToast();
   const router = useRouter();
   const { address, isConnected } = useAccount();
@@ -114,7 +114,7 @@ export default function Home() {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                             >
-                              <UrlInputNode onSubmit={submit} isLoading={state === 'LOADING'} />
+                              <UrlInputNode onSubmit={submit} isLoading={state === 'LOADING'} quota={quota} />
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -237,7 +237,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-               <UrlInputNode onSubmit={submit} isLoading={state === 'LOADING'} />
+               <UrlInputNode onSubmit={submit} isLoading={state === 'LOADING'} quota={quota} />
                {state === 'SUCCESS' && shortUrl && (
                   <div className="mt-2 text-center">
                      <p className="text-primary text-xs font-mono mb-1">Created: {shortUrl.shortUrl}</p>

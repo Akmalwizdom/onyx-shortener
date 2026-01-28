@@ -1,11 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
-        // parallel queries for performance
+        const { searchParams } = new URL(request.url);
+        const wallet = searchParams.get('wallet');
+
         const [
             totalLinksResult,
             totalClicksResult,
@@ -15,26 +17,73 @@ export async function GET() {
             last24hClicksResult,
             prev24hClicksResult
         ] = await Promise.all([
-            sql`SELECT COUNT(*) as count FROM urls`,
-            sql`SELECT SUM(click_count) as total FROM urls`,
-            sql`SELECT COUNT(DISTINCT referrer) as count FROM clicks`,
-            sql`
-                SELECT referrer, COUNT(*) as count 
-                FROM clicks 
-                WHERE referrer IS NOT NULL AND referrer != 'direct'
-                GROUP BY referrer 
-                ORDER BY count DESC 
-                LIMIT 3
-            `,
-            sql`
-                SELECT date_trunc('hour', clicked_at) as hour_bucket, COUNT(*) as count
-                FROM clicks
-                WHERE clicked_at >= NOW() - INTERVAL '24 hours'
-                GROUP BY hour_bucket
-                ORDER BY hour_bucket ASC
-            `,
-            sql`SELECT COUNT(*) as count FROM clicks WHERE clicked_at >= NOW() - INTERVAL '24 hours'`,
-            sql`SELECT COUNT(*) as count FROM clicks WHERE clicked_at >= NOW() - INTERVAL '48 hours' AND clicked_at < NOW() - INTERVAL '24 hours'`
+            wallet
+                ? sql`SELECT COUNT(*) as count FROM urls WHERE creator_wallet = ${wallet}`
+                : sql`SELECT COUNT(*) as count FROM urls`,
+
+            wallet
+                ? sql`SELECT SUM(click_count) as total FROM urls WHERE creator_wallet = ${wallet}`
+                : sql`SELECT SUM(click_count) as total FROM urls`,
+
+            wallet
+                ? sql`
+                    SELECT COUNT(DISTINCT c.referrer) as count 
+                    FROM clicks c
+                    JOIN urls u ON c.url_id = u.id
+                    WHERE u.creator_wallet = ${wallet}`
+                : sql`SELECT COUNT(DISTINCT referrer) as count FROM clicks`,
+
+            wallet
+                ? sql`
+                    SELECT c.referrer, COUNT(*) as count 
+                    FROM clicks c
+                    JOIN urls u ON c.url_id = u.id
+                    WHERE u.creator_wallet = ${wallet} AND c.referrer IS NOT NULL AND c.referrer != 'direct'
+                    GROUP BY c.referrer 
+                    ORDER BY count DESC 
+                    LIMIT 3
+                `
+                : sql`
+                    SELECT referrer, COUNT(*) as count 
+                    FROM clicks 
+                    WHERE referrer IS NOT NULL AND referrer != 'direct'
+                    GROUP BY referrer 
+                    ORDER BY count DESC 
+                    LIMIT 3
+                `,
+
+            wallet
+                ? sql`
+                    SELECT date_trunc('hour', c.clicked_at) as hour_bucket, COUNT(*) as count
+                    FROM clicks c
+                    JOIN urls u ON c.url_id = u.id
+                    WHERE u.creator_wallet = ${wallet} AND c.clicked_at >= NOW() - INTERVAL '24 hours'
+                    GROUP BY hour_bucket
+                    ORDER BY hour_bucket ASC
+                `
+                : sql`
+                    SELECT date_trunc('hour', clicked_at) as hour_bucket, COUNT(*) as count
+                    FROM clicks
+                    WHERE clicked_at >= NOW() - INTERVAL '24 hours'
+                    GROUP BY hour_bucket
+                    ORDER BY hour_bucket ASC
+                `,
+
+            wallet
+                ? sql`
+                    SELECT COUNT(*) as count 
+                    FROM clicks c
+                    JOIN urls u ON c.url_id = u.id
+                    WHERE u.creator_wallet = ${wallet} AND c.clicked_at >= NOW() - INTERVAL '24 hours'`
+                : sql`SELECT COUNT(*) as count FROM clicks WHERE clicked_at >= NOW() - INTERVAL '24 hours'`,
+
+            wallet
+                ? sql`
+                    SELECT COUNT(*) as count 
+                    FROM clicks c
+                    JOIN urls u ON c.url_id = u.id
+                    WHERE u.creator_wallet = ${wallet} AND c.clicked_at >= NOW() - INTERVAL '48 hours' AND c.clicked_at < NOW() - INTERVAL '24 hours'`
+                : sql`SELECT COUNT(*) as count FROM clicks WHERE clicked_at >= NOW() - INTERVAL '48 hours' AND clicked_at < NOW() - INTERVAL '24 hours'`
         ]);
 
         const totalLinks = parseInt(totalLinksResult[0]?.count || '0', 10);
