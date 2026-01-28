@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ToastProvider } from "@/context/ToastContext";
 import { DialogProvider } from "@/context/DialogContext";
+import { OnchainProviders } from "@/components/providers/OnchainProviders";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -87,15 +88,18 @@ export default function RootLayout({
       <head>
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+        <script dangerouslySetInnerHTML={{ __html: 'window.litDisableDevMode = true;' }} />
       </head>
       <body
         className={`${spaceGrotesk.variable} ${spaceMono.variable} ${cabinetGrotesk.variable} antialiased bg-black text-white min-h-screen`}
       >
-        <ToastProvider>
-           <DialogProvider>
-            {children}
-           </DialogProvider>
-        </ToastProvider>
+        <OnchainProviders>
+          <ToastProvider>
+             <DialogProvider>
+              {children}
+             </DialogProvider>
+          </ToastProvider>
+        </OnchainProviders>
       </body>
     </html>
   );

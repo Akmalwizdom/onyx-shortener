@@ -262,3 +262,82 @@ body::before {
   scrollbar-width: none;
   /* Firefox */
 }
+
+/* ========================================
+   COMPONENT OVERRIDES
+   ======================================== */
+
+/* OnchainKit Theme Overrides - FORCEFULLY APPLIED */
+:root {
+  /* Colors */
+  --ock-bg-default: rgba(51, 225, 255, 0.1) !important;
+  --ock-bg-default-hover: rgba(51, 225, 255, 0.2) !important;
+  --ock-bg-primary: rgba(51, 225, 255, 0.1) !important;
+  --ock-bg-primary-hover: rgba(51, 225, 255, 0.2) !important;
+  --ock-bg-secondary: rgba(0, 0, 0, 0.8) !important;
+
+  /* Text */
+  --ock-text-inverse: #33E1FF !important;
+  --ock-text-primary: #33E1FF !important;
+  --ock-text-secondary: rgba(255, 255, 255, 0.6) !important;
+
+  /* Shapes */
+  --ock-border-radius: 0px !important;
+  --ock-border-radius-inner: 0px !important;
+  --ock-font-family: var(--font-mono) !important;
+
+  /* Icons */
+  --ock-icon-color-primary: #33E1FF !important;
+}
+
+/* Force override for Coinbase Wallet Button */
+/* Using broad selectors to catch button, a, or div[role=button] */
+.cyber-wallet-container button,
+.cyber-wallet-container div[role="button"],
+.cyber-wallet-container [data-testid="ockConnectWalletButton"],
+.cyber-wallet-container div[class*="ockConnectWalletButton"] {
+  background-color: rgba(51, 225, 255, 0.1) !important;
+  background-image: none !important;
+  color: #33E1FF !important;
+  font-family: 'Space Mono', monospace !important;
+  border: 1px solid rgba(51, 225, 255, 0.2) !important;
+  border-radius: 0px !important;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px) !important;
+  transition: all 0.3s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  font-size: 12px !important;
+  height: auto !important;
+  padding: 8px 16px !important;
+  box-shadow: none !important;
+}
+
+.cyber-wallet-container button:hover,
+.cyber-wallet-container div[role="button"]:hover {
+  background-color: rgba(51, 225, 255, 0.2) !important;
+  box-shadow: 0 0 15px rgba(51, 225, 255, 0.2) !important;
+  border-color: #33E1FF !important;
+  transform: translateY(-1px);
+}
+
+/* Ensure text inside is also styled correctly */
+.cyber-wallet-container * {
+  font-family: 'Space Mono', monospace !important;
+}
+/* RainbowKit Cyber-Industrial Overrides */
+[data-rk] {
+  --rk-fonts-body: var(--font-mono), monospace !important;
+}
+
+div[role="dialog"] > div > div[style*="background: rgb(0, 0, 0)"] {
+  border: 1px solid rgba(51, 225, 255, 0.2) !important;
+  box-shadow: 0 0 30px rgba(51, 225, 255, 0.05) !important;
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+/* Custom indicator for active wallet selection */
+div[role="menuitem"]:hover {
+  border-left: 2px solid #33E1FF !important;
+  transition: all 0.2s ease;
+}

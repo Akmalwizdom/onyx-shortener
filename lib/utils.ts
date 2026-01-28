@@ -69,6 +69,24 @@ export function formatNumber(num: number): string {
 }
 
 /**
+ * Format crypto balance with adaptive precision
+ * @param balance - The numeric balance
+ * @param symbol - Currency symbol (default: 'ETH')
+ * @returns Formatted string (e.g., "0.00003 ETH")
+ */
+export function formatCryptoBalance(balance: number, symbol: string = 'ETH'): string {
+    if (balance === 0) return `0 ${symbol}`;
+
+    // For very small balances, provide higher precision (up to 6 decimals)
+    if (balance < 0.001) {
+        return `${balance.toFixed(6).replace(/\.?0+$/, '')} ${symbol}`;
+    }
+
+    // For standard balances, use 4 decimals
+    return `${balance.toFixed(4).replace(/\.?0+$/, '')} ${symbol}`;
+}
+
+/**
  * Generate full short URL from base and code
  * @param shortCode - The short code
  * @returns Full URL for the shortened link

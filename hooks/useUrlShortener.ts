@@ -1,6 +1,16 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useAccount } from 'wagmi';
+import { saveLinkToHistory } from '@/utils/storage';
+
+// Define the policy type locally or import from a shared types file
+export type AccessPolicy = {
+    type: 'token' | 'nft';
+    contractAddress: string;
+    minBalance: string;
+    chainId: number;
+} | null;
 
 export type UrlShortenerState = 'IDLE' | 'LOADING' | 'SUCCESS' | 'ERROR';
 
@@ -15,44 +25,55 @@ interface UseUrlShortenerResult {
     state: UrlShortenerState;
     shortUrl: ShortenedUrl | null;
     error: string | null;
-    submit: (url: string) => Promise<void>;
+    errorCode: string | number | null;
+    resetTime: number | null;
+    submit: (url: string, accessPolicy?: AccessPolicy) => Promise<void>;
     retry: () => void;
     reset: () => void;
 }
-
-/**
- * Custom hook for managing URL shortening state machine.
- * 
- * State transitions:
- * IDLE --submit--> LOADING --success--> SUCCESS --reset--> IDLE
- *                          |--error----> ERROR --retry--> IDLE
- */
-import { saveLinkToHistory } from '@/utils/storage';
 
 export function useUrlShortener(): UseUrlShortenerResult {
     const [state, setState] = useState<UrlShortenerState>('IDLE');
     const [shortUrl, setShortUrl] = useState<ShortenedUrl | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [lastUrl, setLastUrl] = useState<string>('');
+    const [errorCode, setErrorCode] = useState<string | number | null>(null);
+    const [resetTime, setResetTime] = useState<number | null>(null);
 
-    const submit = useCallback(async (url: string) => {
-        setLastUrl(url);
+    // Store last submission for retry
+    const [lastSubmission, setLastSubmission] = useState<{ url: string, policy?: AccessPolicy } | null>(null);
+
+    // Get connected wallet
+    const { address } = useAccount();
+
+    const submit = useCallback(async (url: string, accessPolicy?: AccessPolicy) => {
+        setLastSubmission({ url, policy: accessPolicy });
         setState('LOADING');
         setError(null);
+        setErrorCode(null);
+        setResetTime(null);
 
         try {
-            // Call API directly without artificial delay
+            const payload = {
+                url,
+                creatorWallet: address, // Send wallet address if connected
+                accessPolicy // Send gate config if exists
+            };
+
             const response = await fetch('/api/shorten', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url }),
+                body: JSON.stringify(payload),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
+                setErrorCode(response.status);
+                if (response.status === 429 && data.reset) {
+                    setResetTime(data.reset);
+                }
                 throw new Error(data.error || 'Failed to shorten URL');
             }
 
@@ -77,26 +98,30 @@ export function useUrlShortener(): UseUrlShortenerResult {
             setError(err instanceof Error ? err.message : 'Unknown error occurred');
             setState('ERROR');
         }
-    }, []);
+    }, [address]);
 
     const reset = useCallback(() => {
         setState('IDLE');
         setShortUrl(null);
         setError(null);
+        setErrorCode(null);
+        setResetTime(null);
     }, []);
 
     const retry = useCallback(() => {
-        if (lastUrl) {
-            submit(lastUrl);
+        if (lastSubmission) {
+            submit(lastSubmission.url, lastSubmission.policy);
         } else {
             reset();
         }
-    }, [lastUrl, submit, reset]);
+    }, [lastSubmission, submit, reset]);
 
     return {
         state,
         shortUrl,
         error,
+        errorCode,
+        resetTime,
         submit,
         retry,
         reset,

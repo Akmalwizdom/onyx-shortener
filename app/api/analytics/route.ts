@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function GET() {
     try {
@@ -11,31 +11,45 @@ export async function GET() {
             totalClicksResult,
             uniqueSourcesResult,
             topReferralsResult,
-            chartDataResult
+            chartDataResult,
+            last24hClicksResult,
+            prev24hClicksResult
         ] = await Promise.all([
             sql`SELECT COUNT(*) as count FROM urls`,
             sql`SELECT SUM(click_count) as total FROM urls`,
             sql`SELECT COUNT(DISTINCT referrer) as count FROM clicks`,
             sql`
-        SELECT referrer, COUNT(*) as count 
-        FROM clicks 
-        WHERE referrer IS NOT NULL AND referrer != 'direct'
-        GROUP BY referrer 
-        ORDER BY count DESC 
-        LIMIT 3
-      `,
+                SELECT referrer, COUNT(*) as count 
+                FROM clicks 
+                WHERE referrer IS NOT NULL AND referrer != 'direct'
+                GROUP BY referrer 
+                ORDER BY count DESC 
+                LIMIT 3
+            `,
             sql`
-        SELECT date_trunc('hour', clicked_at) as hour_bucket, COUNT(*) as count
-        FROM clicks
-        WHERE clicked_at >= NOW() - INTERVAL '24 hours'
-        GROUP BY hour_bucket
-        ORDER BY hour_bucket ASC
-      `
+                SELECT date_trunc('hour', clicked_at) as hour_bucket, COUNT(*) as count
+                FROM clicks
+                WHERE clicked_at >= NOW() - INTERVAL '24 hours'
+                GROUP BY hour_bucket
+                ORDER BY hour_bucket ASC
+            `,
+            sql`SELECT COUNT(*) as count FROM clicks WHERE clicked_at >= NOW() - INTERVAL '24 hours'`,
+            sql`SELECT COUNT(*) as count FROM clicks WHERE clicked_at >= NOW() - INTERVAL '48 hours' AND clicked_at < NOW() - INTERVAL '24 hours'`
         ]);
 
         const totalLinks = parseInt(totalLinksResult[0]?.count || '0', 10);
         const totalClicks = parseInt(totalClicksResult[0]?.total || '0', 10);
         const uniqueSources = parseInt(uniqueSourcesResult[0]?.count || '0', 10);
+        const last24h = parseInt(last24hClicksResult[0]?.count || '0', 10);
+        const prev24h = parseInt(prev24hClicksResult[0]?.count || '0', 10);
+
+        // Calculate click change percentage
+        let clickChange = 0;
+        if (prev24h > 0) {
+            clickChange = ((last24h - prev24h) / prev24h) * 100;
+        } else if (last24h > 0) {
+            clickChange = 100;
+        }
 
         const referrals = topReferralsResult.map(r => ({
             domain: r.referrer,
@@ -48,6 +62,7 @@ export async function GET() {
                 totalLinks,
                 totalClicks,
                 uniqueSources,
+                clickChange: parseFloat(clickChange.toFixed(1)),
                 // Randomize latency slightly for "live" feel (20-40ms)
                 avgLatency: 20 + Math.floor(Math.random() * 20),
                 referrals,

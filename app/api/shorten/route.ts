@@ -21,24 +21,36 @@ if (redisUrl && redisToken) {
 
     ratelimitDaily = new Ratelimit({
         redis: redis,
-        limiter: Ratelimit.slidingWindow(20, "1 d"), // 20 requests per day
+        limiter: Ratelimit.slidingWindow(50, "1 d"), // Increased limit for dev
         analytics: true,
-        prefix: "xyno_shortener_ratelimit_daily", // Use a different prefix
+        prefix: "onyx_ratelimit_daily",
     });
 
     ratelimitMinute = new Ratelimit({
         redis: redis,
-        limiter: Ratelimit.slidingWindow(3, "1 m"), // 3 requests per minute
+        limiter: Ratelimit.slidingWindow(10, "1 m"), // Increased limit for dev
         analytics: true,
-        prefix: "xyno_shortener_ratelimit_minute", // Use a different prefix
+        prefix: "onyx_ratelimit_minute",
     });
 }
 
 /**
  * Helper: Check Rate Limit
  */
-// Modified Helper: Check Rate Limit to return type
-async function checkRateLimit(request: NextRequest): Promise<{ result: any, type: 'daily' | 'minute' | 'none' }> {
+async function checkRateLimit(request: NextRequest): Promise<{ result: any, type: 'daily' | 'minute' | 'none', reset?: number }> {
+    // Skip rate limiting in local development to avoid workflow interruption
+    if (process.env.NODE_ENV === 'development') {
+        return {
+            result: {
+                success: true,
+                limit: 0,
+                remaining: 0,
+                reset: 0
+            },
+            type: 'none'
+        };
+    }
+
     if (!ratelimitDaily || !ratelimitMinute) {
         return {
             result: {
@@ -57,19 +69,13 @@ async function checkRateLimit(request: NextRequest): Promise<{ result: any, type
         ratelimitMinute.limit(ip),
     ]);
 
-    // If either limit fails, return the failed result
-    if (!dailyResult.success) {
-        return { result: dailyResult, type: 'daily' };
-    }
-    if (!minuteResult.success) {
-        return { result: minuteResult, type: 'minute' };
-    }
+    if (!dailyResult.success) return { result: dailyResult, type: 'daily', reset: dailyResult.reset };
+    if (!minuteResult.success) return { result: minuteResult, type: 'minute', reset: minuteResult.reset };
 
-    // Both succeeded, return the result with the lower remaining count
     if (dailyResult.remaining <= minuteResult.remaining) {
-        return { result: dailyResult, type: 'daily' };
+        return { result: dailyResult, type: 'daily', reset: dailyResult.reset };
     } else {
-        return { result: minuteResult, type: 'minute' };
+        return { result: minuteResult, type: 'minute', reset: minuteResult.reset };
     }
 }
 
@@ -82,12 +88,10 @@ function calculateExpiration(expiresIn?: number, expiresAt?: string): Date | nul
         date.setDate(date.getDate() + expiresIn);
         return date;
     }
-
     if (expiresAt && typeof expiresAt === 'string') {
         const date = new Date(expiresAt);
         return isNaN(date.getTime()) ? null : date;
     }
-
     // Default: 30 Days
     const defaultDate = new Date();
     defaultDate.setDate(defaultDate.getDate() + 30);
@@ -97,16 +101,37 @@ function calculateExpiration(expiresIn?: number, expiresAt?: string): Date | nul
 /**
  * Helper: Generate Unique Short Code & Insert to DB
  */
-async function createShortUrlRecord(url: string, expiresAt: Date | null) {
+async function createShortUrlRecord(
+    url: string,
+    expiresAt: Date | null,
+    creatorWallet: string | null,
+    accessPolicy: any | null
+) {
     let retries = 0;
     const maxRetries = 3;
 
     while (retries < maxRetries) {
         try {
             const shortCode = nanoid(7);
+
+            // Note: accessPolicy is stored as JSONB. 
+            // If creatorWallet is null, it's an anonymous link.
+
             const result = await sql`
-                INSERT INTO urls (short_code, original_url, expires_at)
-                VALUES (${shortCode}, ${url}, ${expiresAt ? expiresAt.toISOString() : null})
+                INSERT INTO urls (
+                    short_code, 
+                    original_url, 
+                    expires_at, 
+                    creator_wallet, 
+                    access_policy
+                )
+                VALUES (
+                    ${shortCode}, 
+                    ${url}, 
+                    ${expiresAt ? expiresAt.toISOString() : null},
+                    ${creatorWallet},
+                    ${accessPolicy ? JSON.stringify(accessPolicy) : null}
+                )
                 RETURNING id, short_code, original_url, created_at, expires_at
             `;
 
@@ -127,58 +152,37 @@ async function createShortUrlRecord(url: string, expiresAt: Date | null) {
 
 /**
  * POST /api/shorten
- * Creates a short URL from the provided original URL
  */
 export async function POST(request: NextRequest) {
     try {
         // 1. Rate Limiting
-        const { result, type } = await checkRateLimit(request);
-
+        const { result, type, reset } = await checkRateLimit(request);
         if (!result.success) {
-            const now = Date.now();
-            const resetInMs = result.reset - now;
-            const resetInSeconds = Math.ceil(resetInMs / 1000);
-
-            let errorMessage = 'Too many requests. Please try again later.';
-
-            if (type === 'minute') {
-                errorMessage = `Whoa, slow down! You can shorten another link in ${resetInSeconds} seconds.`;
-            } else if (type === 'daily') {
-                const hours = Math.ceil(resetInSeconds / 3600);
-                const minutes = Math.ceil(resetInSeconds / 60);
-                if (hours > 1) {
-                    errorMessage = `Daily limit reached (20 links/day). Resets in about ${hours} hours.`;
-                } else {
-                    errorMessage = `Daily limit reached (20 links/day). Resets in ${minutes} minutes.`;
-                }
-            }
-
-            return NextResponse.json(
-                { error: errorMessage },
-                {
-                    status: 429, headers: {
-                        'X-RateLimit-Limit': result.limit.toString(),
-                        'X-RateLimit-Remaining': result.remaining.toString(),
-                        'X-RateLimit-Reset': result.reset.toString(),
-                    }
-                }
-            );
+            return NextResponse.json({
+                error: 'Rate limit exceeded.',
+                reset: reset // Unix timestamp in ms
+            }, { status: 429 });
         }
 
         const body = await request.json();
-        const { url, expiresIn, expiresAt } = body;
+        const { url, expiresIn, expiresAt, creatorWallet, accessPolicy } = body;
 
         // 2. Input Validation
         if (!url || typeof url !== 'string') {
-            return NextResponse.json({ error: 'URL is required and must be a string' }, { status: 400 });
+            return NextResponse.json({ error: 'URL is required' }, { status: 400 });
         }
-
         if (!isValidUrl(url)) {
-            return NextResponse.json({ error: 'Invalid URL format. Must be a valid HTTP or HTTPS URL.' }, { status: 400 });
+            return NextResponse.json({ error: 'Invalid URL format' }, { status: 400 });
+        }
+        if (url.length > 2048) {
+            return NextResponse.json({ error: 'URL is too long' }, { status: 400 });
         }
 
-        if (url.length > 2048) {
-            return NextResponse.json({ error: 'URL is too long (max 2048 characters)' }, { status: 400 });
+        // Basic Access Policy Validation
+        if (accessPolicy) {
+            if (!accessPolicy.contractAddress || !accessPolicy.contractAddress.startsWith('0x')) {
+                return NextResponse.json({ error: 'Invalid contract address in access policy' }, { status: 400 });
+            }
         }
 
         // 3. Security Check (Safe Browsing)
@@ -187,12 +191,12 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'This URL has been flagged as unsafe.' }, { status: 403 });
         }
 
-        // 4. Logic & Persistence
+        // 4. Persistence
         const expiresAtDate = calculateExpiration(expiresIn, expiresAt);
-        const newUrl = await createShortUrlRecord(url, expiresAtDate);
+        const newUrl = await createShortUrlRecord(url, expiresAtDate, creatorWallet || null, accessPolicy || null);
 
         if (!newUrl) {
-            return NextResponse.json({ error: 'Failed to generate unique short code. Please try again.' }, { status: 500 });
+            return NextResponse.json({ error: 'Failed to generate short code.' }, { status: 500 });
         }
 
         // 5. Response

@@ -1,11 +1,14 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { errorShake } from '@/lib/animations';
 
 interface ErrorNodeProps {
   message?: string;
+  code?: string | number;
+  resetTime?: number | null;
   onRetry: () => void;
   className?: string;
 }
@@ -15,9 +18,43 @@ interface ErrorNodeProps {
  */
 export function ErrorNode({ 
   message = 'CONNECTION_FAILED: Unable to generate short link', 
+  code = 'ERR_500',
+  resetTime = null,
   onRetry,
   className 
 }: ErrorNodeProps) {
+  // Logic for countdown if resetTime exists
+  const [timeLeft, setTimeLeft] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!resetTime) {
+      setTimeLeft(null);
+      return;
+    }
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = resetTime - now;
+
+      if (diff <= 0) {
+        setTimeLeft(null);
+        return;
+      }
+
+      const seconds = Math.ceil(diff / 1000);
+      if (seconds < 60) {
+        setTimeLeft(`${seconds}s`);
+      } else {
+        const minutes = Math.ceil(seconds / 60);
+        setTimeLeft(`${minutes}m`);
+      }
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [resetTime]);
+
   return (
     <motion.div
       className={cn('flex flex-col items-center gap-6', className)}
@@ -99,9 +136,17 @@ export function ErrorNode({
       </motion.button>
 
       {/* Error Details */}
-      <div className="flex gap-6 text-[8px] font-mono text-white/20">
-        <span>CODE: ERR_500</span>
-        <span>TIMESTAMP: {new Date().toISOString()}</span>
+      <div className="flex flex-col items-center gap-2">
+        {timeLeft && (
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-error/10 border border-error/20 text-error font-mono text-[10px] animate-pulse">
+                <span className="material-symbols-outlined text-xs">schedule</span>
+                RETRY AVAILABLE IN {timeLeft}
+            </div>
+        )}
+        <div className="flex gap-6 text-[8px] font-mono text-white/20">
+            <span>CODE: {code}</span>
+            <span>IP: DETECTED_INTERNAL</span>
+        </div>
       </div>
     </motion.div>
   );

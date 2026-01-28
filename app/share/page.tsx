@@ -54,9 +54,7 @@ function ShareContent() {
         </Link>
         <h2 className="text-white/60 text-xs font-bold leading-tight tracking-[0.2em] flex-1 text-center uppercase">Link Ready</h2>
         <div className="flex w-10 items-center justify-end">
-          <button className="flex items-center justify-center size-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-white hover:bg-white/10 transition-colors">
-            <span className="material-symbols-outlined text-xl">settings_input_component</span>
-          </button>
+          {/* Settings icon removed as per request */}
         </div>
       </header>
 
@@ -96,13 +94,24 @@ function ShareContent() {
             {/* Decorative element */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
             
+            {/* Top Right 'Open' Link - Ghost Style */}
+            <a
+              href={shortUrl}
+              target="_blank"
+              rel="noopener"
+              className="absolute top-4 right-4 size-10 flex items-center justify-center text-white/20 hover:text-white transition-all active:scale-90"
+              title="Visit Link"
+            >
+              <span className="material-symbols-outlined text-lg">open_in_new</span>
+            </a>
+
             <div className="flex flex-col gap-2 w-full">
               <p className="text-white/40 text-[10px] font-medium tracking-[0.15em] uppercase">Your Short Link</p>
               <p className="lucid-mint-text font-mono text-3xl font-bold leading-tight break-all tracking-tight selection:bg-primary/30 selection:text-white">{shortUrl}</p>
-              <p className="text-white/30 text-xs font-normal leading-normal truncate px-4">{originalUrl}</p>
+              <p className="text-white/60 text-xs font-normal leading-normal truncate px-4">{originalUrl}</p>
             </div>
             
-            <div className="flex w-full gap-3">
+            <div className="flex w-full gap-2 mt-2">
               <button 
                 onClick={handleCopy}
                 className="group flex-1 relative flex items-center justify-center overflow-hidden rounded-lg h-12 bg-primary text-black text-sm font-bold leading-normal tracking-[0.1em] transition-transform active:scale-95 hover:brightness-110 inner-glow"
@@ -111,23 +120,13 @@ function ShareContent() {
                 <span className="material-symbols-outlined ml-2 text-lg">content_copy</span>
               </button>
 
-              <a
-                href={shortUrl}
-                target="_blank"
-                rel="noopener"
-                className="group flex-none relative flex items-center justify-center overflow-hidden rounded-lg h-12 w-12 bg-white/10 border border-white/10 text-white text-sm font-bold leading-normal transition-transform active:scale-95 hover:bg-white/20"
-                title="Visit Link"
-              >
-                <span className="material-symbols-outlined text-xl">open_in_new</span>
-              </a>
-
               {canShare && (
                 <button 
                   onClick={handleShare}
-                  className="group flex-1 relative flex items-center justify-center overflow-hidden rounded-lg h-12 bg-white/10 border border-white/10 text-white text-sm font-bold leading-normal tracking-[0.1em] transition-transform active:scale-95 hover:bg-white/20"
+                  className="flex-none size-12 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all active:scale-95"
+                  title="Share Link"
                 >
-                  <span className="truncate">SHARE</span>
-                  <span className="material-symbols-outlined ml-2 text-lg">ios_share</span>
+                  <span className="material-symbols-outlined text-xl">ios_share</span>
                 </button>
               )}
             </div>

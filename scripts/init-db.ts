@@ -20,21 +20,15 @@ async function initDatabase() {
 
     try {
         // Read SQL file
-        const sqlFile = path.join(__dirname, 'init-db.sql');
-        const sqlContent = fs.readFileSync(sqlFile, 'utf-8');
+        const sqlFilePath = path.join(__dirname, 'init-db.sql');
+        let sqlContent = fs.readFileSync(sqlFilePath, 'utf-8');
 
-        // Split by semicolons and execute each statement
-        const statements = sqlContent
-            .split(';')
-            .map(s => s.trim())
-            .filter(s => s.length > 0 && !s.startsWith('--'));
-
-        for (const statement of statements) {
-            await sql.unsafe(statement);
-        }
+        // Execute the entire SQL content as one single execution
+        // Neon's unsafe method can handle multiple statements and procedural blocks
+        await sql.unsafe(sqlContent);
 
         console.log('✅ Database schema initialized successfully!');
-        console.log('\n📊 Tables created:');
+        console.log('\n📊 Tables created/updated:');
         console.log('   - urls (for storing short links)');
         console.log('   - clicks (for analytics tracking)');
         console.log('\n🚀 You can now start the application!');

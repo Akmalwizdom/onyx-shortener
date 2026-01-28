@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import useSWR from 'swr';
 import { motion } from 'framer-motion';
 import { BottomNav } from '@/components/navigation/BottomNav';
+import { cn } from '@/lib/utils';
 import { ResponsiveContainer } from '@/components/layout/ResponsiveContainer'; // [NEW]
 import { staggerContainer, fadeInUp, listItemVariant } from '@/lib/animations';
 
@@ -118,11 +119,17 @@ export default function AnalyticsPage() {
                       </p>
                     )}
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="material-symbols-outlined text-primary text-sm">
-                        trending_up
+                      <span className={cn(
+                        "material-symbols-outlined text-sm",
+                        (data?.clickChange ?? 0) >= 0 ? "text-primary" : "text-error"
+                      )}>
+                        {(data?.clickChange ?? 0) >= 0 ? "trending_up" : "trending_down"}
                       </span>
-                      <p className="text-primary text-[11px] font-mono font-medium">
-                        +12.4% <span className="text-white/30 ml-1">/ Last 24h</span>
+                      <p className={cn(
+                        "text-[11px] font-mono font-medium",
+                        (data?.clickChange ?? 0) >= 0 ? "text-primary" : "text-error"
+                      )}>
+                        {(data?.clickChange ?? 0) >= 0 ? '+' : ''}{data?.clickChange ?? 0}% <span className="text-white/30 ml-1">/ Last 24h</span>
                       </p>
                     </div>
                   </div>
