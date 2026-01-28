@@ -125,7 +125,7 @@ export function Navbar() {
                         <div className="flex items-center gap-3">
                             {/* Profile Card - Isolated from 'cyber-wallet-container' to avoid CSS conflicts */}
                             <div className="flex items-center gap-3 pl-3 pr-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-full group hover:bg-white/[0.08] hover:border-white/20 transition-all cursor-default shadow-lg shadow-black/20">
-                                <Avatar className="h-7 w-7 border border-white/5 shadow-sm" address={account.address as `0x${string}`} />
+                                <Avatar className="h-7 w-7 !rounded-full shadow-sm bg-transparent" address={account.address as `0x${string}`} />
                                 <div className="flex flex-col">
                                     <Name 
                                         address={account.address as `0x${string}`} 

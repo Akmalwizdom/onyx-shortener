@@ -267,37 +267,18 @@ body::before {
    COMPONENT OVERRIDES
    ======================================== */
 
-/* OnchainKit Theme Overrides - FORCEFULLY APPLIED */
+/* OnchainKit Theme Overrides - MINIMAL OVERRIDES */
+/* We avoid !important on OCK variables so we don't break brand assets (Base logo) */
 :root {
-  /* Colors */
-  --ock-bg-default: rgba(51, 225, 255, 0.1) !important;
-  --ock-bg-default-hover: rgba(51, 225, 255, 0.2) !important;
-  --ock-bg-primary: rgba(51, 225, 255, 0.1) !important;
-  --ock-bg-primary-hover: rgba(51, 225, 255, 0.2) !important;
-  --ock-bg-secondary: rgba(0, 0, 0, 0.8) !important;
-
-  /* Text */
-  --ock-text-inverse: #33E1FF !important;
-  --ock-text-primary: #33E1FF !important;
-  --ock-text-secondary: rgba(255, 255, 255, 0.6) !important;
-
-  /* Shapes */
-  --ock-border-radius: 0px !important;
-  --ock-border-radius-inner: 0px !important;
-  --ock-font-family: var(--font-mono) !important;
-
-  /* Icons */
-  --ock-icon-color-primary: #33E1FF !important;
+  --ock-font-family: var(--font-mono);
+  --ock-icon-color-primary: var(--primary);
 }
 
 /* Force override for Coinbase Wallet Button */
-/* Using broad selectors to catch button, a, or div[role=button] */
 .cyber-wallet-container button,
 .cyber-wallet-container div[role="button"],
-.cyber-wallet-container [data-testid="ockConnectWalletButton"],
-.cyber-wallet-container div[class*="ockConnectWalletButton"] {
+.cyber-wallet-container [data-testid="ockConnectWalletButton"] {
   background-color: rgba(51, 225, 255, 0.1) !important;
-  background-image: none !important;
   color: #33E1FF !important;
   font-family: 'Space Mono', monospace !important;
   border: 1px solid rgba(51, 225, 255, 0.2) !important;
@@ -306,30 +287,27 @@ body::before {
   transition: all 0.3s ease !important;
   text-transform: uppercase !important;
   letter-spacing: 0.1em !important;
-  font-size: 12px !important;
-  height: auto !important;
   padding: 8px 16px !important;
   box-shadow: none !important;
 }
 
-.cyber-wallet-container button:hover,
-.cyber-wallet-container div[role="button"]:hover {
+.cyber-wallet-container button:hover {
   background-color: rgba(51, 225, 255, 0.2) !important;
-  box-shadow: 0 0 15px rgba(51, 225, 255, 0.2) !important;
   border-color: #33E1FF !important;
-  transform: translateY(-1px);
 }
 
 /* Ensure text inside is also styled correctly */
 .cyber-wallet-container * {
   font-family: 'Space Mono', monospace !important;
 }
+
 /* RainbowKit Cyber-Industrial Overrides */
 [data-rk] {
   --rk-fonts-body: var(--font-mono), monospace !important;
 }
 
-div[role="dialog"] > div > div[style*="background: rgb(0, 0, 0)"] {
+/* Modal styling */
+div[role="dialog"]>div>div[style*="background: rgb(0, 0, 0)"] {
   border: 1px solid rgba(51, 225, 255, 0.2) !important;
   box-shadow: 0 0 30px rgba(51, 225, 255, 0.05) !important;
   background: rgba(0, 0, 0, 0.95) !important;
@@ -340,4 +318,30 @@ div[role="dialog"] > div > div[style*="background: rgb(0, 0, 0)"] {
 div[role="menuitem"]:hover {
   border-left: 2px solid #33E1FF !important;
   transition: all 0.2s ease;
+}
+
+/* ========================================
+   REFINED IDENTITY STYLING
+   Forces circularity ONLY on user avatars while
+   keeping brand logos (Base, Phantom, etc.) 
+   authentic according to their own CSS.
+   ======================================== */
+[data-rk] [class*="Avatar"],
+[class*="ock-avatar"],
+[class*="ock"] [class*="Avatar"] {
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+  background-color: transparent !important;
+}
+
+/* Explicitly target the Base Smart Wallet background to FIX the "Blue Square" 
+   by making the background transparent. This allows the official white logo 
+   inside to finally be visible against our dark background. */
+[class*="ock-bg-primary"] {
+  border-radius: 9999px !important;
+  /* Force circle for the internal brand icon */
+  background-color: transparent !important;
+  /* Remove the blocking blue background */
+  border: 1px solid rgba(51, 225, 255, 0.2) !important;
+  /* Subtle Onyx border instead */
 }

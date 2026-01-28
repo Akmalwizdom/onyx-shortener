@@ -84,7 +84,7 @@ export function TopNav({ className, hideLogo = false }: TopNavProps) {
                         <div className="flex items-center gap-2">
                             {/* Compact Mobile Profile Card - Isolated from CSS conflicts */}
                             <div className="flex items-center gap-2 pl-2 pr-3 py-1 bg-white/[0.04] border border-white/10 rounded-full shadow-lg">
-                                <Avatar className="h-6 w-6 border border-white/5" address={account.address as `0x${string}`} />
+                                <Avatar className="h-6 w-6 !rounded-full bg-transparent" address={account.address as `0x${string}`} />
                                 <div className="flex flex-col">
                                     <Name address={account.address as `0x${string}`} className="text-[10px] font-mono font-bold !text-white leading-none truncate max-w-[60px]" />
                                     <Address address={account.address as `0x${string}`} className="text-[8px] font-mono !text-white/20 leading-none" />
