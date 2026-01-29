@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('has title', async ({ page }) => {
   await page.goto('/');
-  await expect(page).toHaveTitle(/XYNO|ONYX/i);
+  await expect(page).toHaveTitle(/XYNO/i);
 });
 
 test('should display daily quota indicator on share page after shortening', async ({ page }) => {
@@ -21,7 +21,7 @@ test('should display daily quota indicator on share page after shortening', asyn
   // Wait for the quota indicator to be rendered using Test ID
   const quotaIndicator = page.getByTestId('quota-indicator');
   await expect(quotaIndicator).toBeVisible({ timeout: 15000 });
-  
+
   const quotaRemaining = page.getByTestId('quota-remaining');
   await expect(quotaRemaining).toBeVisible();
   const text = await quotaRemaining.innerText();

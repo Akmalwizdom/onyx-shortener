@@ -3,7 +3,7 @@
 import { darkTheme, Theme } from '@rainbow-me/rainbowkit';
 
 /**
- * Onyx Cyber-Industrial Theme for RainbowKit
+ * Xyno Cyber-Industrial Theme for RainbowKit
  * Based on the project's globals.css tokens
  */
 export const onyxRainbowTheme: Theme = darkTheme({

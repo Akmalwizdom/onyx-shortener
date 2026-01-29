@@ -129,7 +129,7 @@ export default function UnlockPage({ params }: { params: Promise<{ slug: string 
                 <p className="text-sm font-mono text-white/50 mb-8">
                     {status === 'GRANTED' ? 'Redirecting you now...' : 
                      status === 'DENIED' ? errorMessage :
-                     'This link is protected by Onyx Protocol.'}
+                     'This link is protected by Xyno Protocol.'}
                 </p>
 
                 {/* Requirement Box */}

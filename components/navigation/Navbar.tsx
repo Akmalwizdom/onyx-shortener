@@ -39,7 +39,7 @@ export function Navbar() {
               terminal
             </span>
             <h1 className="text-primary font-mono text-sm tracking-[0.2em] font-bold group-hover:text-white transition-colors">
-              ONYX
+              XYNO
             </h1>
         </Link>
 

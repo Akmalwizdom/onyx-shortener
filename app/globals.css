@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ========================================
-   ONYX-CYBER-INDUSTRIAL DESIGN SYSTEM
+   XYNO-CYBER-INDUSTRIAL DESIGN SYSTEM
    ======================================== */
 
 /* Design Tokens */
@@ -12,7 +12,7 @@
   --background: #000000;
   --background-light: #f5f8f7;
   --background-dark: #000000;
-  /* Onyx-Cyber theme */
+  /* Xyno-Cyber theme */
   --error: #ff4d00;
   --error-rgb: 255, 77, 0;
 

@@ -89,7 +89,7 @@ export default function Home() {
       <div className="hidden md:flex items-center justify-between mb-8">
         <div>
           <h1 className="text-white text-[48px] font-bold leading-none tracking-tighter italic font-display mb-2">
-            ONYX//<br/><span className="text-primary">PROTOCOL</span>
+            XYNO//<br/><span className="text-primary">PROTOCOL</span>
           </h1>
           <p className="font-mono text-xs text-primary/40 tracking-widest">Base Native Access Gateway</p>
         </div>
@@ -108,7 +108,7 @@ export default function Home() {
             animate="visible"
           >
             <h1 className="text-white text-[32px] font-bold leading-none tracking-tighter mb-2 italic font-display">
-              ONYX//<br/><span className="text-primary">PROTO</span>
+              XYNO//<br/><span className="text-primary">PROTO</span>
             </h1>
             <p className="font-mono text-mono text-xs text-primary/40 tracking-widest">Access Gateway</p>
           </motion.div>

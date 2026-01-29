@@ -34,7 +34,7 @@ export const CyberLoading = () => {
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-40 animate-pulse">0101X9Z_LOAD_NODE_04</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-20 pt-20">ENCRYPT_88_V_2</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-60 pt-10">CORE_SYS_STAGING</div>
-        <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-30 pt-40">CYBER_ONYX_STREAM</div>
+        <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-30 pt-40">CYBER_XYNO_STREAM</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-50">NULL_PTR_ERROR_RESOLVED</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-10 pt-12">BOOT_LOADER_V4</div>
       </div>

@@ -9,7 +9,7 @@ import { cookieStorage, createStorage } from 'wagmi';
 export const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '4abcc2255a21d61437c7a3ec678e99b1';
 
 export const config = getDefaultConfig({
-  appName: 'Onyx Protocol',
+  appName: 'Xyno Protocol',
   projectId,
   chains: [base],
   ssr: true,

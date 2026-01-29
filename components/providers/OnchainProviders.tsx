@@ -43,7 +43,7 @@ export function OnchainProviders({ children }: { children: ReactNode }) {
       if (shouldSuppress(args)) {
         // Log a very clean, one-liner hint in dev instead of a full stack trace if desired
         if (!isProd) {
-          // originalError.apply(console, ['[Onyx] Suppressed 3rd-party noise:', args[0]]);
+          // originalError.apply(console, ['[Xyno] Suppressed 3rd-party noise:', args[0]]);
         }
         return;
       }

@@ -36,7 +36,7 @@ export function TopNav({ className, hideLogo = false }: TopNavProps) {
               terminal
             </span>
             <h2 className="text-primary font-mono text-sm tracking-[0.2em] font-bold">
-              ONYX
+              XYNO
             </h2>
           </Link>
         ) : (

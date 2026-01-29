@@ -10,7 +10,7 @@ export const GlobalLoading = () => {
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-40 animate-pulse">SYSTEM_INIT</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-20 pt-20">LOADING_ASSETS</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-60 pt-10">CORE_MODULES</div>
-        <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-30 pt-40">CYBER_ONYX</div>
+        <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-30 pt-40">CYBER_XYNO</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-50">SYNC_DATABANKS</div>
         <div className="data-stream-text text-[10px] tracking-widest text-primary leading-none opacity-10 pt-12">V_4.0.1</div>
       </div>

@@ -14,7 +14,7 @@ type PhosphorTextProps<T extends ElementType = 'span'> = {
 
 /**
  * Text component with phosphor glow effect.
- * Creates the distinctive glowing mint text characteristic of the ONYX-CYBER theme.
+ * Creates the distinctive glowing mint text characteristic of the XYNO-CYBER theme.
  */
 export const PhosphorText = forwardRef<HTMLElement, PhosphorTextProps>(
   ({ 

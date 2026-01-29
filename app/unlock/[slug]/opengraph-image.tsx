@@ -3,7 +3,7 @@ import { sql } from '@/lib/db';
 
 export const runtime = 'edge';
 
-export const alt = 'Onyx Secured Link';
+export const alt = 'Xyno Secured Link';
 export const size = {
   width: 1200,
   height: 630,
@@ -138,7 +138,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
                 letterSpacing: '0.2em',
             }}
         >
-            ONYX PROTOCOL // BASE
+            XYNO PROTOCOL // BASE
         </div>
       </div>
     ),

@@ -106,7 +106,7 @@ export function HistoryList({
                             if (navigator.share) {
                                 try {
                                     await navigator.share({
-                                        title: 'Onyx Short Link',
+                                        title: 'Xyno Short Link',
                                         text: `Check out this link: ${link.originalUrl}`,
                                         url: link.shortUrl
                                     });
