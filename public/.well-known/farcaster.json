@@ -1,0 +1,25 @@
+{
+  "name": "Xyno",
+  "version": "1",
+  "iconUrl": "https://xyno.vercel.app/icon.png",
+  "homeUrl": "https://xyno.vercel.app",
+  "imageUrl": "https://xyno.vercel.app/preview.png",
+  "buttonTitle": "Shorten with Xyno",
+  "splashImageUrl": "https://xyno.vercel.app/preview.png",
+  "splashBackgroundColor": "#000000",
+  "subtitle": "Web3 URL Shortener & Management",
+  "description": "A professional URL Shortener & management platform with Web3 integration, providing secure asset sharing, token-gated access, and actionable business analytics.",
+  "primaryCategory": "utility",
+  "tags": [
+    "web3",
+    "blockchain",
+    "link-management",
+    "token-gating",
+    "url-shortener"
+  ],
+  "tagline": "Link Shortener and Management",
+  "ogTitle": "XYNO",
+  "ogDescription": "Securely manage and shorten links with Web3-powered access control and professional analytics.",
+  "ogImageUrl": "https://xyno.vercel.app/icon.png",
+  "castShareUrl": "https://warpcast.com/~/compose?text=Shorten+your+links+with+XYNO&embeds[]=https://xyno.vercel.app"
+}
