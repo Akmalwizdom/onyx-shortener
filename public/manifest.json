@@ -4,12 +4,22 @@
     "start_url": "/",
     "display": "standalone",
     "background_color": "#000000",
-    "theme_color": "#A7FFD2",
+    "theme_color": "#33E1FF",
     "icons": [
         {
             "src": "/favicon.ico",
-            "sizes": "64x64 32x32 24x24 16x16",
-            "type": "image/x-icon"
+            "sizes": "1024x1024",
+            "type": "image/png"
+        },
+        {
+            "src": "/icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+        },
+        {
+            "src": "/apple-touch-icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
         }
     ]
 }

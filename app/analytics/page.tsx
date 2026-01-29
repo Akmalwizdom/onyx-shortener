@@ -83,8 +83,12 @@ export default function AnalyticsPage() {
       {/* Mobile Header (Hidden on Desktop) */}
       <header className="sticky top-0 z-50 flex items-center bg-black p-6 pb-4 justify-between border-b border-white/10 md:hidden">
         <div className="flex items-center gap-3">
-          <div className="text-primary flex size-8 shrink-0 items-center justify-center border border-primary/40 rounded-sm">
-            <span className="material-symbols-outlined text-xl">terminal</span>
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden border border-white/10 rounded-sm bg-white/5">
+            <img 
+              src="/icon.png" 
+              alt="XYNO Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <h1 className="text-white text-2xl heading-style tracking-tighter uppercase">
              {viewLabel} STATS

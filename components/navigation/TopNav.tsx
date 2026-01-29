@@ -31,10 +31,14 @@ export function TopNav({ className, hideLogo = false }: TopNavProps) {
       >
         {/* Logo & Branding */}
         {!hideLogo ? (
-          <Link href="/" className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-2xl">
-              terminal
-            </span>
+          <Link href="/" className="flex items-center gap-3">
+            <div className="w-8 h-8 flex items-center justify-center shrink-0">
+                <img 
+                  src="/icon.png" 
+                  alt="XYNO Logo" 
+                  className="w-full h-full object-contain"
+                />
+            </div>
             <h2 className="text-primary font-mono text-sm tracking-[0.2em] font-bold">
               XYNO
             </h2>

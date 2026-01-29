@@ -34,10 +34,14 @@ export function Navbar() {
         className="hidden md:flex fixed top-0 left-0 right-0 h-16 bg-black/50 backdrop-blur-xl border-b border-white/5 z-50 items-center justify-between px-8"
       >
         {/* LOGO */}
-        <Link href="/" className="flex items-center gap-2 group">
-            <span className="material-symbols-outlined text-primary text-2xl group-hover:text-white transition-colors">
-              terminal
-            </span>
+        <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative w-9 h-9 flex items-center justify-center">
+                <img 
+                  src="/icon.png" 
+                  alt="XYNO Logo" 
+                  className="w-full h-full object-contain filter group-hover:brightness-110 transition-all"
+                />
+            </div>
             <h1 className="text-primary font-mono text-sm tracking-[0.2em] font-bold group-hover:text-white transition-colors">
               XYNO
             </h1>
