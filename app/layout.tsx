@@ -37,11 +37,11 @@ const cabinetGrotesk = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: "XYNO | Cyber-Industrial URL Shortener",
+    default: "XYNO | Web3-Integrated URL Management",
     template: "%s | XYNO"
   },
-  description: "Advanced, privacy-focused URL shortener with real-time analytics and industrial-grade reliability.",
-  keywords: ["url shortener", "link shortener", "analytics", "privacy", "cyberpunk", "industrial design"],
+  description: "A professional URL management platform with Web3 integration, providing secure asset sharing, token-gated access, and actionable business analytics.",
+  keywords: ["web3", "business", "analytics", "blockchain", "link-management", "token-gating"],
   authors: [{ name: "XYNO Team" }],
   creator: "XYNO",
   publisher: "XYNO",
@@ -54,19 +54,18 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://xyno.vercel.app",
-    title: "XYNO | Cyber-Industrial URL Shortener",
-    description: "Shorten links with style. Real-time analytics, privacy-first, and a cyber-industrial aesthetic.",
+    title: "XYNO | Web3-Integrated URL Management",
+    description: "Securely manage and shorten links with Web3-powered access control and professional analytics.",
     siteName: "XYNO Shortener",
   },
   twitter: {
     card: "summary_large_image",
-    title: "XYNO | Cyber-Industrial URL Shortener",
-    description: "Shorten links with style. Real-time analytics, privacy-first, and a cyber-industrial aesthetic.",
+    title: "XYNO | Web3-Integrated URL Management",
+    description: "Securely manage and shorten links with Web3-powered access control and professional analytics.",
   },
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
   }
 };
 
