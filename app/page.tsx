@@ -108,9 +108,9 @@ export default function Home() {
             animate="visible"
           >
             <h1 className="text-white text-[32px] font-bold leading-none tracking-tighter mb-2 italic font-display">
-              XYNO//<br/><span className="text-primary">PROTO</span>
+              XYNO//<br/><span className="text-primary">PROTOCOL</span>
             </h1>
-            <p className="font-mono text-mono text-xs text-primary/40 tracking-widest">Access Gateway</p>
+            <p className="font-mono text-mono text-xs text-primary/40 tracking-widest">Base Native Access Gateway</p>
           </motion.div>
 
            <motion.div 
