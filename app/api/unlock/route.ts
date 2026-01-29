@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
                 });
 
                 // Convert user input (e.g. 100) to BigInt with decimals (e.g. 100000000000000000000)
-                const requiredAmount = BigInt(minBalance) * (10n ** BigInt(decimals));
+                const requiredAmount = BigInt(minBalance) * (BigInt(10) ** BigInt(decimals));
 
                 if (rawBalance < requiredAmount) {
                     return NextResponse.json({ error: 'Insufficient token balance' }, { status: 403 });
@@ -104,9 +104,9 @@ export async function POST(request: NextRequest) {
         }
 
         // 4. Success!
-        return NextResponse.json({ 
-            success: true, 
-            originalUrl: link.original_url 
+        return NextResponse.json({
+            success: true,
+            originalUrl: link.original_url
         });
 
     } catch (error) {
