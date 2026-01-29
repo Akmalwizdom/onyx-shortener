@@ -107,7 +107,7 @@ export default function HistoryPage() {
 
       {/* Content Area */}
       <motion.main
-        className="flex flex-col gap-4 p-4 pt-4 md:p-0 md:pb-0"
+        className="flex flex-col gap-4 p-4 pt-4 pb-32 md:p-0 md:pb-0"
         variants={staggerContainer}
         animate="visible"
       >

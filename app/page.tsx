@@ -37,19 +37,35 @@ export default function Home() {
   );
 
   // Redirect to share page when a new link is created successfully
+  // Redirect to share page when a new link is created successfully
   useEffect(() => {
     if (state === 'SUCCESS' && shortUrl) {
       refreshHistory();
-      showToast('LINK GENERATED SUCCESSFULLY', 'success');
       
-      // Redirect to the share page with parameters
+      // Redirect to the share page with parameters immediately
       const params = new URLSearchParams();
       params.set('short', shortUrl.shortUrl);
       params.set('original', shortUrl.originalUrl);
       
+      // Use quota from the hook's state
+      if (quota) {
+        params.set('rem', quota.remaining.toString());
+        params.set('lim', quota.limit.toString());
+      }
+      
       router.push(`/share?${params.toString()}`);
     }
-  }, [state, shortUrl, refreshHistory, showToast, router]);
+  }, [state, shortUrl, quota, refreshHistory, showToast, router]);
+
+  // Handle Rate Limit Toast separately for better visibility
+  useEffect(() => {
+    if (state === 'ERROR' && errorCode === 429) {
+      const message = !isConnected 
+        ? 'RATE LIMIT REACHED: CONNECT WALLET FOR MORE QUOTA' 
+        : 'DAILY QUOTA EXCEEDED: TRY AGAIN TOMORROW';
+      showToast(message, 'warning');
+    }
+  }, [state, errorCode, isConnected, showToast]);
 
   return (
     <ResponsiveContainer>
@@ -118,25 +134,8 @@ export default function Home() {
                             </motion.div>
                           )}
                         </AnimatePresence>
-                        
-                        {/* Success Display Desktop */}
-                        {state === 'SUCCESS' && shortUrl && (
-                             <motion.div 
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="mt-4 p-4 bg-primary/10 border border-primary/30 rounded-lg flex items-center justify-between"
-                             >
-                                <span className="text-primary font-mono text-sm">{shortUrl.shortUrl}</span>
-                                <button 
-                                    onClick={() => {navigator.clipboard.writeText(shortUrl.shortUrl); showToast('COPIED', 'success')}}
-                                    className="text-primary hover:text-white"
-                                >
-                                    COPY
-                                </button>
-                             </motion.div>
-                        )}
 
-                        {state === 'ERROR' && (
+                        {state === 'ERROR' && errorCode !== 429 && (
                             <div className="mt-4">
                               <ErrorNode 
                                 message={error || undefined} 
@@ -230,7 +229,7 @@ export default function Home() {
       {/* Mobile Input Area */}
       <div className="md:hidden w-full px-6 pt-6 pb-24 bg-black border-t border-white/10 mt-auto sticky bottom-0 z-20">
         <AnimatePresence mode="wait">
-          {(state === 'IDLE' || state === 'ERROR' || state === 'SUCCESS') && (
+          {(state === 'IDLE' || state === 'ERROR' || state === 'SUCCESS' || state === 'LOADING') && (
             <motion.div
               key="input-mobile"
               initial={{ opacity: 0, y: 20 }}
@@ -238,16 +237,10 @@ export default function Home() {
               exit={{ opacity: 0, y: -20 }}
             >
                <UrlInputNode onSubmit={submit} isLoading={state === 'LOADING'} quota={quota} />
-               {state === 'SUCCESS' && shortUrl && (
-                  <div className="mt-2 text-center">
-                     <p className="text-primary text-xs font-mono mb-1">Created: {shortUrl.shortUrl}</p>
-                     <button onClick={() => {navigator.clipboard.writeText(shortUrl.shortUrl); showToast('COPIED', 'success')}} className="text-[10px] underline text-white/50">COPY LINK</button>
-                  </div>
-               )}
             </motion.div>
           )}
 
-          {state === 'ERROR' && (
+          {state === 'ERROR' && errorCode !== 429 && (
             <motion.div key="error-mobile" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <ErrorNode 
                 message={error || undefined} 

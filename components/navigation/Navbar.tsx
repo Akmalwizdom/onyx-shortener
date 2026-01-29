@@ -35,15 +35,12 @@ export function Navbar() {
       >
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors relative overflow-hidden">
-              <span className="material-symbols-outlined text-primary text-lg animate-pulse-slow">bolt</span>
-              <div className="absolute inset-0 bg-primary/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300"></div>
-          </div>
-          <div className="flex flex-col">
-              <h1 className="text-white font-bold tracking-tighter italic font-display leading-none">
-              ONYX<span className="text-primary">.APP</span>
-              </h1>
-          </div>
+            <span className="material-symbols-outlined text-primary text-2xl group-hover:text-white transition-colors">
+              terminal
+            </span>
+            <h1 className="text-primary font-mono text-sm tracking-[0.2em] font-bold group-hover:text-white transition-colors">
+              ONYX
+            </h1>
         </Link>
 
         {/* CENTER NAV */}
@@ -124,18 +121,12 @@ export function Navbar() {
                     return (
                         <div className="flex items-center gap-3">
                             {/* Profile Card - Isolated from 'cyber-wallet-container' to avoid CSS conflicts */}
-                            <div className="flex items-center gap-3 pl-3 pr-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-full group hover:bg-white/[0.08] hover:border-white/20 transition-all cursor-default shadow-lg shadow-black/20">
-                                <Avatar className="h-7 w-7 !rounded-full shadow-sm bg-transparent" address={account.address as `0x${string}`} />
+                            <div className="flex items-center gap-2.5 pl-3 pr-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-full group hover:bg-white/[0.08] hover:border-white/20 transition-all cursor-default shadow-lg shadow-black/20">
+                                <span className="material-symbols-outlined text-[18px] text-primary">account_balance_wallet</span>
                                 <div className="flex flex-col">
                                     <Name 
                                         address={account.address as `0x${string}`} 
-                                        className="text-[11px] font-mono font-bold !text-white leading-none mb-0.5 tracking-tight" 
-                                    />
-                                    {/* Only show address if Name is an ENS/custom name, or show it small if not. 
-                                        Actually, Name defaults to address, so we just show a simplified address line */}
-                                    <Address 
-                                        address={account.address as `0x${string}`} 
-                                        className="text-[9px] font-mono !text-white/20 leading-none" 
+                                        className="text-[12px] font-mono font-bold !text-white leading-none tracking-tight" 
                                     />
                                 </div>
                                 <div className="w-[1px] h-4 bg-white/10 mx-1"></div>

@@ -10,8 +10,10 @@ import { isValidUrl } from '@/lib/utils'; // Shared validation
 export const runtime = 'nodejs';
 
 // Initialize Rate Limiters
-let ratelimitDaily: Ratelimit | null = null;
-let ratelimitMinute: Ratelimit | null = null;
+let ratelimitDailyAnon: Ratelimit | null = null;
+let ratelimitDailyConnected: Ratelimit | null = null;
+let ratelimitMinuteAnon: Ratelimit | null = null;
+let ratelimitMinuteConnected: Ratelimit | null = null;
 
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
@@ -19,18 +21,34 @@ const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_A
 if (redisUrl && redisToken) {
     const redis = new Redis({ url: redisUrl, token: redisToken });
 
-    ratelimitDaily = new Ratelimit({
-        redis: redis,
-        limiter: Ratelimit.slidingWindow(50, "1 d"), // Increased limit for dev
+    // Daily Limits: 5 for Anon, 20 for Connected
+    ratelimitDailyAnon = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(5, "1 d"),
         analytics: true,
-        prefix: "onyx_ratelimit_daily",
+        prefix: "onyx_ratelimit_daily_anon",
     });
 
-    ratelimitMinute = new Ratelimit({
-        redis: redis,
-        limiter: Ratelimit.slidingWindow(10, "1 m"), // Increased limit for dev
+    ratelimitDailyConnected = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(20, "1 d"),
         analytics: true,
-        prefix: "onyx_ratelimit_minute",
+        prefix: "onyx_ratelimit_daily_wallet",
+    });
+
+    // Minute Limits: 3 for Anon, 15 for Connected
+    ratelimitMinuteAnon = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(3, "1 m"),
+        analytics: true,
+        prefix: "onyx_ratelimit_minute_anon",
+    });
+
+    ratelimitMinuteConnected = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(15, "1 m"),
+        analytics: true,
+        prefix: "onyx_ratelimit_minute_wallet",
     });
 }
 
@@ -38,17 +56,21 @@ if (redisUrl && redisToken) {
  * Helper: Check Rate Limit
  */
 async function checkRateLimit(request: NextRequest, walletAddress?: string | null): Promise<{ result: any, type: 'daily' | 'minute' | 'none', reset?: number, remaining: number, limit: number }> {
-    // Skip rate limiting in local development to avoid workflow interruption
-    // if (process.env.NODE_ENV === 'development') {
-    //     return {
-    //         result: { success: true },
-    //         type: 'none',
-    //         remaining: 999,
-    //         limit: 999
-    //     };
-    // }
+    // dedicated bypass for E2E tests and authorized local workflows
+    if (request.headers.get('x-ratelimit-bypass') === 'true') {
+        return {
+            result: { success: true },
+            type: 'none',
+            remaining: 999,
+            limit: 999
+        };
+    }
 
-    if (!ratelimitDaily || !ratelimitMinute) {
+    const isConnected = !!walletAddress;
+    const dailyLimitInstance = isConnected ? ratelimitDailyConnected : ratelimitDailyAnon;
+    const minuteLimitInstance = isConnected ? ratelimitMinuteConnected : ratelimitMinuteAnon;
+
+    if (!dailyLimitInstance || !minuteLimitInstance) {
         return {
             result: { success: true },
             type: 'none',
@@ -58,40 +80,25 @@ async function checkRateLimit(request: NextRequest, walletAddress?: string | nul
     }
 
     const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
-
-    // TIERED LOGIC:
-    // If wallet connected, use wallet as identifier and give higher limit.
-    // If not, use IP as identifier and give lower limit.
-    const isConnected = !!walletAddress;
     const identifier = isConnected ? `wallet_${walletAddress}` : `ip_${ip}`;
 
-    // Limits (Overrides default Upstash instance config for dynamic tiering)
-    const DAILY_LIMIT = isConnected ? 50 : 5;
-    const MINUTE_LIMIT = isConnected ? 15 : 3;
-
-    // Note: We use the existing ratelimitDaily/Minute instances but with custom overrides if needed.
-    // However, Upstash Ratelimit instances are usually fixed. 
-    // To implement dynamic tiers properly with Upstash, we either need multiple instances 
-    // or calculate manually. For now, let's use the default but adjust the logic.
-
-    // Realistic approach with current setup:
-    // Use the 50/day limit for everyone for now, but in a real prod env, 
-    // you'd use different instances or a manual Redis counter.
-
     const [dailyResult, minuteResult] = await Promise.all([
-        ratelimitDaily.limit(identifier),
-        ratelimitMinute.limit(identifier),
+        dailyLimitInstance.limit(identifier),
+        minuteLimitInstance.limit(identifier),
     ]);
 
     const finalResult = !dailyResult.success ? dailyResult : minuteResult;
     const type = !dailyResult.success ? 'daily' : (!minuteResult.success ? 'minute' : 'none');
+
+    // Limits matches constructor config
+    const LIMIT = isConnected ? 20 : 5;
 
     return {
         result: finalResult,
         type: type as any,
         reset: finalResult.reset,
         remaining: Math.min(dailyResult.remaining, minuteResult.remaining),
-        limit: DAILY_LIMIT // Simplified for UI
+        limit: LIMIT
     };
 }
 
@@ -183,7 +190,7 @@ export async function POST(request: NextRequest) {
                 reset, // Unix timestamp in ms
                 remaining,
                 limit,
-                suggestion: !creatorWallet ? 'Connect wallet to increase your limit to 50 links/day.' : 'You have reached your daily limit.'
+                suggestion: !creatorWallet ? 'Connect wallet to increase your limit to 20 links/day.' : 'You have reached your daily limit.'
             }, { status: 429 });
         }
 

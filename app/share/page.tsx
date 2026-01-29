@@ -6,11 +6,16 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { staggerContainer, fadeInUp } from '@/lib/animations';
 import { ResponsiveContainer } from '@/components/layout/ResponsiveContainer';
+import { cn } from '@/lib/utils';
 
 function ShareContent() {
   const searchParams = useSearchParams();
   const shortUrl = searchParams.get('short') || 'short.ly/error';
   const originalUrl = searchParams.get('original') || 'https://unknown-source.com';
+  const remValue = searchParams.get('rem');
+  const limValue = searchParams.get('lim');
+  
+  const quota = remValue && limValue ? { remaining: parseInt(remValue), limit: parseInt(limValue) } : null;
   const [copied, setCopied] = useState(false);
   const [canShare, setCanShare] = useState(false);
 
@@ -130,6 +135,26 @@ function ShareContent() {
                 </button>
               )}
             </div>
+
+            {quota && (
+              <div 
+                className="w-full pt-4 border-t border-white/5 flex justify-between items-center"
+                data-testid="quota-indicator"
+              >
+                <span className="text-[9px] font-mono text-white/30 tracking-widest uppercase">
+                    Daily Quota
+                </span>
+                <span 
+                    data-testid="quota-remaining"
+                    className={cn(
+                        "text-[10px] font-mono font-bold tracking-widest",
+                        quota.remaining === 0 ? "text-error" : (quota.remaining < 3 ? "text-orange-400" : "text-primary/60")
+                    )}
+                >
+                    {quota.remaining}/{quota.limit} REMAINING
+                </span>
+              </div>
+            )}
             
           </div>
           {/* Shadow Glow */}

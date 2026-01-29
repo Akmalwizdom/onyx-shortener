@@ -83,13 +83,15 @@ export function TopNav({ className, hideLogo = false }: TopNavProps) {
                     return (
                         <div className="flex items-center gap-2">
                             {/* Compact Mobile Profile Card - Isolated from CSS conflicts */}
-                            <div className="flex items-center gap-2 pl-2 pr-3 py-1 bg-white/[0.04] border border-white/10 rounded-full shadow-lg">
-                                <Avatar className="h-6 w-6 !rounded-full bg-transparent" address={account.address as `0x${string}`} />
+                            <div className="flex items-center gap-2.5 pl-3 pr-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-full shadow-lg">
+                                <span className="material-symbols-outlined text-[18px] text-primary">account_balance_wallet</span>
                                 <div className="flex flex-col">
-                                    <Name address={account.address as `0x${string}`} className="text-[10px] font-mono font-bold !text-white leading-none truncate max-w-[60px]" />
-                                    <Address address={account.address as `0x${string}`} className="text-[8px] font-mono !text-white/20 leading-none" />
+                                    <Name 
+                                      address={account.address as `0x${string}`} 
+                                      className="text-[12px] font-mono font-bold !text-white leading-none tracking-tight truncate max-w-[80px]" 
+                                    />
                                 </div>
-                                <div className="w-[1px] h-3 bg-white/10 mx-0.5"></div>
+                                <div className="w-[1px] h-4 bg-white/10 mx-1"></div>
                                 <button 
                                     onClick={() => setIsDisconnectModalOpen(true)}
                                     className="flex items-center justify-center w-5 h-5 rounded-full hover:bg-error/10 text-white/10 hover:text-error transition-all"

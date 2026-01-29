@@ -56,4 +56,12 @@ describe('UrlInputNode', () => {
     expect(screen.getByText(/CONTRACT ADDRESS/i)).toBeInTheDocument()
     expect(screen.getByText(/MINIMUM BALANCE/i)).toBeInTheDocument()
   })
+
+  it('should render quota indicator when prop is provided', () => {
+    const quota = { remaining: 3, limit: 5 }
+    render(<UrlInputNode onSubmit={vi.fn()} quota={quota} />)
+    
+    expect(screen.getByText(/DAILY QUOTA/i)).toBeInTheDocument()
+    expect(screen.getByText(/3\/5 REMAINING/i)).toBeInTheDocument()
+  })
 })

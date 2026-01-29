@@ -18,14 +18,15 @@ describe('useUrlShortener', () => {
     global.fetch = vi.fn()
   })
 
-  it('should initialize with IDLE state', () => {
+  it('should initialize with IDLE state and null quota', () => {
     const { result } = renderHook(() => useUrlShortener())
     expect(result.current.state).toBe('IDLE')
     expect(result.current.shortUrl).toBeNull()
     expect(result.current.error).toBeNull()
+    expect(result.current.quota).toBeNull()
   })
 
-  it('should handle successful submission', async () => {
+  it('should handle successful submission and update quota', async () => {
     const mockResponse = {
       success: true,
       data: {
@@ -34,6 +35,7 @@ describe('useUrlShortener', () => {
         shortUrl: 'http://localhost:3000/r/abc1234',
         originalUrl: 'https://example.com',
         createdAt: new Date().toISOString(),
+        quota: { remaining: 4, limit: 5 }
       },
     }
 
@@ -50,23 +52,32 @@ describe('useUrlShortener', () => {
 
     expect(result.current.state).toBe('SUCCESS')
     expect(result.current.shortUrl?.shortCode).toBe('abc1234')
+    expect(result.current.quota).toEqual({ remaining: 4, limit: 5 })
     expect(result.current.error).toBeNull()
   })
 
-  it('should handle API error', async () => {
+  it('should handle rate limit error and update quota', async () => {
     vi.mocked(global.fetch).mockResolvedValueOnce({
       ok: false,
-      json: async () => ({ error: 'Something went wrong' }),
+      status: 429,
+      json: async () => ({
+        error: 'Rate limit exceeded',
+        remaining: 0,
+        limit: 5,
+        reset: Date.now() + 60000
+      }),
     } as Response)
 
     const { result } = renderHook(() => useUrlShortener())
 
     await act(async () => {
-      await result.current.submit('https://example.com')
+      await result.current.submit('https://example.com').catch(() => { })
     })
 
     expect(result.current.state).toBe('ERROR')
-    expect(result.current.error).toBe('Something went wrong')
+    expect(result.current.errorCode).toBe(429)
+    expect(result.current.quota).toEqual({ remaining: 0, limit: 5 })
+    expect(result.current.resetTime).toBeDefined()
   })
 
   it('should retry last submission', async () => {
@@ -79,7 +90,7 @@ describe('useUrlShortener', () => {
     } as Response)
 
     await act(async () => {
-      await result.current.submit('https://example.com')
+      await result.current.submit('https://example.com').catch(() => { })
     })
 
     expect(result.current.state).toBe('ERROR')
@@ -92,15 +103,17 @@ describe('useUrlShortener', () => {
         data: {
           shortCode: 'retry123',
           createdAt: new Date().toISOString(),
+          quota: { remaining: 4, limit: 5 }
         },
       }),
     } as Response)
 
     await act(async () => {
-      result.current.retry()
+      await result.current.retry()
     })
 
     expect(result.current.state).toBe('SUCCESS')
     expect(result.current.shortUrl?.shortCode).toBe('retry123')
+    expect(result.current.quota).toEqual({ remaining: 4, limit: 5 })
   })
 })

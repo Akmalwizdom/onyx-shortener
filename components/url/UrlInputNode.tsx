@@ -78,7 +78,7 @@ export function UrlInputNode({ onSubmit, isLoading = false, quota, className }: 
     <div className={cn('flex flex-col gap-4', className)}>
       <div className="flex justify-between items-end px-1">
         <span className="text-[10px] font-mono text-primary tracking-tighter">
-          TARGET URL
+          INPUT LONG URL
         </span>
         <button 
             type="button"
@@ -195,11 +195,13 @@ export function UrlInputNode({ onSubmit, isLoading = false, quota, className }: 
 
         {/* Quota Indicator */}
         {quota && (
-            <div className="flex justify-between items-center px-1">
+            <div className="flex justify-between items-center px-1" data-testid="quota-indicator-home">
                 <span className="text-[9px] font-mono text-white/30 tracking-widest uppercase">
                     Daily Quota
                 </span>
-                <span className={cn(
+                <span 
+                    data-testid="quota-remaining-home"
+                    className={cn(
                     "text-[10px] font-mono font-bold tracking-widest",
                     quota.remaining === 0 ? "text-error" : (quota.remaining < 3 ? "text-orange-400" : "text-primary/60")
                 )}>
